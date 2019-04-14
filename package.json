@@ -1,0 +1,18 @@
+{
+  "name": "jackbot",
+  "version": "1.0.0",
+  "description": "All the botting you'll ever need... Probably not",
+  "main": "bot.js",
+  "author": "jackik",
+  "dependencies": {
+    "bufferutil": "^4.0.1",
+    "discord.js": "^11.4.2",
+    "ffmpeg": "0.0.4",
+    "ffmpeg.js": "^3.1.9001",
+    "lowdb": "^1.0.0",
+    "moment": "^2.24.0",
+    "opusscript": "0.0.6",
+    "readline-async": "^0.1.0",
+    "winston": "^3.2.1"
+  }
+}

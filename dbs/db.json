@@ -1,0 +1,46 @@
+{
+  "activities": [
+    {
+      "name": "hard to get",
+      "details": {
+        "type": "PLAYING"
+      }
+    },
+    {
+      "name": "mindgames",
+      "details": {
+        "type": "PLAYING"
+      }
+    },
+    {
+      "name": "with fire",
+      "details": {
+        "type": "PLAYING"
+      }
+    },
+    {
+      "name": "your problems",
+      "details": {
+        "type": "LISTENING"
+      }
+    },
+    {
+      "name": "games you don't own",
+      "details": {
+        "type": "PLAYING"
+      }
+    },
+    {
+      "name": "YOU",
+      "details": {
+        "type": "WATCHING"
+      }
+    },
+    {
+      "name": "V-WG on twitch",
+      "details": {
+        "type": "WATCHING"
+      }
+    }
+  ]
+}
