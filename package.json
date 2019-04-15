@@ -13,6 +13,7 @@
     "moment": "^2.24.0",
     "opusscript": "0.0.6",
     "readline-async": "^0.1.0",
+    "simple-git": "^1.110.0",
     "winston": "^3.2.1"
   }
 }
