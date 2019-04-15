@@ -130,7 +130,16 @@ client.on('message', async msg => {
       msg.react('525995512172904451');
       msg.react('🦍');
     }
-    if (msg.content.toLowerCase().match('yuri' || 'Moritz' || 'Kaesekuchen' || 'Käsekuchen') || msg.isMentioned('289752534032056320')) {
+    if (msg.content.toLowerCase().match('yuri') || msg.isMentioned('289752534032056320')) {
+      msg.react('525995512172904451');
+    }
+    if (msg.content.toLowerCase().match('Moritz') || msg.isMentioned('289752534032056320')) {
+      msg.react('525995512172904451');
+    }
+    if (msg.content.toLowerCase().match('Kaesekuchen') || msg.isMentioned('289752534032056320')) {
+      msg.react('525995512172904451');
+    }
+    if (msg.content.toLowerCase().match('Käsekuchen') || msg.isMentioned('289752534032056320')) {
       msg.react('525995512172904451');
     }
     if (msg.content.toLowerCase().match('wtf')) {
