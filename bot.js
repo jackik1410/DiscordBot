@@ -126,8 +126,9 @@ client.on('message', async msg => {
       msg.react('525995512172904451');
       msg.react('🦍');
     }
-    if (msg.content.toLowerCase().match('yuri' && 'Moritz' && 'Kaesekuchen' && 'Käsekuchen') || msg.isMentioned('289752534032056320')) {
+    if (['yuri', 'Moritz', 'Kaesekuchen', 'Käsekuchen'].some(triggerword => {if (msg.content.toLowerCase().match(triggerword)) return true;}) || msg.isMentioned('289752534032056320')) {
       msg.react('525995512172904451');
+
     }
     if (msg.content.toLowerCase().match('wtf')) {
       msg.react('557192347704754216');

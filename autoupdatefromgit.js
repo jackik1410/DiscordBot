@@ -4,10 +4,9 @@ const restart = require('./logger').restart;
 
 var doUpdate = true; //weither or not it automatically updates from git repo.
 
-
 git.pull().tags((err, tags) => console.log("Latest available tag: %s", tags.latest));
 
-async function autoUpdate(){
+async function checkForUpdates(){
   git.pull((err, update) => {
     if(update && update.summary.changes) {
       winston.info('update found, restarting bot');
@@ -23,11 +22,17 @@ async function autoUpdate(){
   return;
 }
 
-if (doUpdate) setInterval(autoUpdate, 60000); // 60000 = 1min
+function initialiseRepo (git) {
+  return git.init()
+    .then(() => git.addRemote('origin', 'https://github.com/jackik1410/DiscordBot'))
+}
 
 
+if (doUpdate) {
+  if(!git.checkIsRepo()){
+    initialiseRepo(git).
+    git.fetch();
+  }
 
-
-
-
-// update repo and when there are changes, restart the app
+  setInterval(checkForUpdates, 60000);// 60000 = 1min
+}
