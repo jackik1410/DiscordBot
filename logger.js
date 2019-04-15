@@ -12,11 +12,13 @@ const client = new Discord.Client({
 client.login(auth.token);//needed
 
 winston.remove(winston.transports.Console);
-winston.add(new winston.transports.Console, {
+let moment = require('moment');
+winston.add( new winston.transports.File({ filename: `logs/${moment().format('DD.MM.YYYY')}.log`, level: 'debug' }));
+winston.add(new winston.transports.Console(), {
     colorize: true,
     level: 'silly'
 });
-winston.level = 'info';
+// winston.level = 'info';
   // new winston.transports.File({ filename: 'error.log', level: 'error' });
   // new winston.transports.File({ filename: 'combined.log' });
 client.on('ready', () => {
@@ -48,8 +50,7 @@ client.on('ready', () => {
   // const transport = new CustomTransport();
 
   // winston.add( new CustomTransport);
-  let moment = require('moment');
-  winston.add( new CustomTransport, new winston.transports.File({ filename: `logs/error ${moment().format('DD.MM.YYYY')}.log`, level: 'debug' }));
+  winston.add( new CustomTransport());
 });
 
 
