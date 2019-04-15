@@ -6,6 +6,7 @@ const main = require('../bot.js');
 const fs = require('fs');
 const winston = require(`../logger.js`).winston;
 const db = require(`../logger.js`).db;
+const restart = require(`../logger.js`).restart;
 
 //.catch(err => winston.error(err));
 module.exports = {
@@ -16,26 +17,7 @@ module.exports = {
       "description":"restarts the bot",
       "adminOnly": true,
       "run": async function run(client, msg, args){
-        winston.info('RESTARTING BOT');
-        await msg.channel.send("restarting bot...");
-        const { spawn } = require('child_process');
-
-        const subprocess = spawn(process.argv[0], [`../bot.js`], {
-          detached: true,
-          // stdout: process.stdout,
-          // stdio: 'inherit'
-          stdio: ['ignore', 'ignore', 'ignore']
-        });
-        if (subprocess == undefined) {
-          msg.channel.send("Couldn't restart bot");
-          return;
-        }
-        if (subprocess.connected) {
-          console.log('disconnecting subprocess');
-          subprocess.disconnect();
-        }
-        subprocess.unref();
-        process.exit();
+        restart();
       }
     },
     { //oldrestart no longer used

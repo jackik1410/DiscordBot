@@ -6,7 +6,7 @@ const main = require('../bot.js');
 
 const winston = require(`../logger.js`).winston;
 
-
+//runs when name found in a message (not YET implemented)
 module.exports = {
   "triggers":[
     {

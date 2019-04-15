@@ -27,12 +27,12 @@ module.exports = {
       "description": "still not entirely implemented",
       "MemberOnly": true,
       "run": async function run(client, msg, args, command) {
-        switch (args[0]) {
-          case 'list':
+        switch (args[0]) {//args[0]
+          case 'test':
             msg.channel.send(await fs.readdir('./Sounds/'));
             return;
           case 'play':
-
+            //not yet intended to work
             return;
           default:
 
@@ -59,10 +59,7 @@ module.exports = {
             await VC.join().then(connection => {
               let dispatcher = connection.playFile(path);
               dispatcher.on("end", end => {
-                // setTimeout(
-                  // function (msg)
-                  {VC.leave(); IsReady = 1;}
-                  // , 1500, msg);
+                setTimeout(function (msg){VC.leave(); IsReady = 1;}, 1500, msg);
               });
             }).catch(err => winston.error(err));
             break;

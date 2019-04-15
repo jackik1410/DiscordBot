@@ -4,6 +4,11 @@ var auth = require('./auth.json');
 var OPs = require('./dbs/OPs.json');
 const fs = require("fs");
 
+const db = require(`./logger.js`).db;
+const winston = require(`./logger.js`).winston;
+
+require('./autoupdatefromgit.js');
+
 const client = new Discord.Client({
    token: auth.token,
    autorun: true
@@ -11,8 +16,6 @@ const client = new Discord.Client({
 client.login(auth.token);//needed
 
 
-const db = require(`./logger.js`).db;
-const winston = require(`./logger.js`).winston;
 
 
 process.title = `running V-WG Bot`;

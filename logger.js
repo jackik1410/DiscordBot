@@ -61,7 +61,32 @@ const FileSync = require('lowdb/adapters/FileSync');
 const adapter = new FileSync('./dbs/db.json');
 const db = low(adapter);
 
+
+async function restart(){
+  // winston.info('RESTARTING BOT');
+  // await msg.channel.send("restarting bot...");
+  const { spawn } = require('child_process');
+
+  const subprocess = spawn(process.argv[0], [`../bot.js`], {
+    detached: true,
+    // stdout: process.stdout,
+    // stdio: 'inherit'
+    stdio: ['ignore', 'ignore', 'ignore']
+  });
+  if (subprocess == undefined) {
+    winston.info("Couldn't restart bot");
+    return;
+  }
+  if (subprocess.connected) {
+    console.log('disconnecting subprocess');
+    subprocess.disconnect();
+  }
+  subprocess.unref();
+  process.exit();
+}
+
 module.exports = {
   "winston":winston,
-  "db":db
+  "db":db,
+  "restart":restart
 };
