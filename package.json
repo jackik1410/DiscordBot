@@ -1,7 +1,7 @@
 {
   "name": "jackbot",
   "version": "1.0.0",
-  "description": "All the botting you'll ever need... Probably not",
+  "description": "All the botting you'll ever need... Probably not, but maybe...",
   "main": "bot.js",
   "author": "jackik",
   "dependencies": {
