@@ -1,22 +1,18 @@
-const Discord = require('discord.js');
-const Transport = require('winston-transport');
-var auth = require('./auth.json');
-var OPs = require('./dbs/OPs.json');
+const Discord = require('discord.js'); //basic discord functionality
+var OPs = require('./dbs/OPs.json'); //to be admin, or not to be admin
 const fs = require("fs");
 
-const db = require(`./logger.js`).db;
-const winston = require(`./logger.js`).winston;
+const db = require(`./logger.js`).db; //database, for storing and and retreiving data
+const winston = require(`./logger.js`).winston; //provides logger functionality
 
-require('./autoupdatefromgit.js');
+require('./autoupdatefromgit.js'); //automatically checks for updates and updates the bot if found
 
+var auth = require('./auth.json'); // contains the authentication token for the bot
 const client = new Discord.Client({
-   token: auth.token,
+   token: auth.token, //can be manually edited here aswell
    autorun: true
 });
 client.login(auth.token);//needed
-
-
-
 
 process.title = `running V-WG Bot`;
 
@@ -90,7 +86,7 @@ fs.readdir("./commands/", (err, files) => {
   });
 });
 
-client.on('ready', () => {
+client.on('ready', () => { // tell them when you're ready
   module.exports = {"client": client};
   const consoleinput = require('./consoleinput');
 
@@ -130,16 +126,7 @@ client.on('message', async msg => {
       msg.react('525995512172904451');
       msg.react('🦍');
     }
-    if (msg.content.toLowerCase().match('yuri') || msg.isMentioned('289752534032056320')) {
-      msg.react('525995512172904451');
-    }
-    if (msg.content.toLowerCase().match('Moritz') || msg.isMentioned('289752534032056320')) {
-      msg.react('525995512172904451');
-    }
-    if (msg.content.toLowerCase().match('Kaesekuchen') || msg.isMentioned('289752534032056320')) {
-      msg.react('525995512172904451');
-    }
-    if (msg.content.toLowerCase().match('Käsekuchen') || msg.isMentioned('289752534032056320')) {
+    if (msg.content.toLowerCase().match('yuri' && 'Moritz' && 'Kaesekuchen' && 'Käsekuchen') || msg.isMentioned('289752534032056320')) {
       msg.react('525995512172904451');
     }
     if (msg.content.toLowerCase().match('wtf')) {
