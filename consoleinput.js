@@ -69,6 +69,10 @@ rl.on('line', (line) => {
             console.log("command couldn't be run, run() not defined");
             return;
           }
+          if (ListedCommand.cli == false) {
+            console.log('This command was intentionally deactivated for the CLI');
+            return;
+          }
           ListedCommand.run(client, msg, args, command, db).catch(err => winston.error(err));
         }
         break;

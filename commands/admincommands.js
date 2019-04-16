@@ -1,8 +1,6 @@
-const Discord = require("discord.js");
 const OPs = require('../dbs/OPs.json');
 
 const main = require('../bot.js');
-// const logger = main.logger;
 const fs = require('fs');
 const winston = require(`../logger.js`).winston;
 const db = require(`../logger.js`).db;
