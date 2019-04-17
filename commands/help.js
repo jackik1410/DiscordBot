@@ -33,7 +33,7 @@ module.exports = {
           admincommands += `\n"${element.name}": ${element.description}`;
         }
       } else if (element.MemberOnly && element.MemberOnly == true) {
-        if (msg.member.roles.some(r => ["Moderator", "Mitbewohner", "Admin", "el jefe"].includes(r.name))) {//don't bother doing if not going to be shown
+        if ( msg.channel.type != 'dm' && msg.member.roles.some(r => ["Moderator", "Mitbewohner", "Admin", "el jefe"].includes(r.name))) {//don't bother doing if not going to be shown
           membercommands += `\n<${element.name}>: ${element.description}`;
         }
       } else {
@@ -41,12 +41,12 @@ module.exports = {
       }
     });
 
-
-    if (msg.member.roles.find("name", "Mitbewohner")) {
-      membercommands = "\nMember Commands: ```javascript\n"+membercommands+"```";
+  //double checking roles
+    if ( msg.channel.type != 'dm' && msg.member.roles.find("name", "Mitbewohner")) {
+      membercommands = "\nMember Commands: ```javascript\n" + membercommands+"```";
     }
     if (OPs.admins.includes(msg.author.id)) {
-      admincommands =  "\nAdmincommands: ```javascript\n"    +admincommands+"```";
+      admincommands =  "\nAdmincommands: ```javascript\n" + admincommands+"```";
     }
     helpmessage = "Available Commands: ```javascript\n" + generalcommands + "```" + membercommands + admincommands;
     msg.channel.send(helpmessage);
