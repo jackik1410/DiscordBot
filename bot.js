@@ -25,69 +25,76 @@ client.events = new Discord.Collection();
 client.triggers = new Discord.Collection();
 
 //reading and collection the actual files
-fs.readdir("./commands/", (err, files) => {
-  if(err) console.log(err);
-  let jsfile = files.filter(f => f.split(".").pop() === "js");
-  if(jsfile.length <= 0){
-    console.log("Commands Folder empy, no commands found");
-    return;
-  }
+function loadCommands(){
+  fs.readdir("./commands/", (err, files) => {
+    if(err) console.log(err);
+    let jsfile = files.filter(f => f.split(".").pop() === "js");
+    if(jsfile.length <= 0){
+      console.log("Commands Folder empy, no commands found");
+      return;
+    }
 
-  jsfile.forEach((f, i) => {
-    if(!f.endsWith(".js")) return;
-    let commandfile = require(`./commands/${f}`);
-    console.log(`${f} found`);
+    jsfile.forEach((f, i) => {
+      if(!f.endsWith(".js")) return;
+      let commandfile = require(`./commands/${f}`);
+      console.log(`${f} found`);
 
-    if (commandfile.CommandArray) {
-      console.log("  installing multiple:");
-      commandfile.CommandArray.forEach(element => {
-        if(!element.name) return;
-        client.commands.set(element.name, element);
-        console.log(`      - ${element.name}`);
-        if (element.aliases) {
+      if (commandfile.CommandArray) {
+        console.log("  installing multiple:");
+        commandfile.CommandArray.forEach(element => {
+          if(!element.name) return;
+          client.commands.set(element.name, element);
+          console.log(`      - ${element.name}`);
+          if (element.aliases) {
+            console.log(`          aliases:`);
+            let aliases = "";//aliases directly refer to the command object
+            element.aliases.forEach(alias => {
+              client.aliases.set(alias, element.name);
+              aliases += ", " + alias;
+            });
+            console.log(`             ${aliases.slice(2)}`);
+          }
+        });
+      }
+      if (commandfile.name) {
+        client.commands.set(commandfile.name, commandfile);
+        console.log(`   installed - ${commandfile.name}`);
+        if (commandfile.aliases) {
           console.log(`          aliases:`);
-          let aliases = "";//aliases directly refer to the command object
-          element.aliases.forEach(alias => {
-            client.aliases.set(alias, element.name);
-            aliases += ", " + alias;
+          var aliases = "";//aliases directly refer to the commandfile
+          commandfile.aliases.forEach(alias => {
+            client.aliases.set(alias, commandfile.name);
+            aliases += ", " + alias ;
           });
           console.log(`             ${aliases.slice(2)}`);
         }
-      });
-    }
-    if (commandfile.name) {
-      client.commands.set(commandfile.name, commandfile);
-      console.log(`   installed - ${commandfile.name}`);
-      if (commandfile.aliases) {
-        console.log(`          aliases:`);
-        var aliases = "";//aliases directly refer to the commandfile
-        commandfile.aliases.forEach(alias => {
-          client.aliases.set(alias, commandfile.name);
-          aliases += ", " + alias ;
-        });
-        console.log(`             ${aliases.slice(2)}`);
       }
-    }
 
-    if (commandfile.events) { //loading Events
-      commandfile.events.forEach(async (event) => {
-        if(! event.looptime || event.looptime < 50) {
-          winston.warn(`${event.name} has looptime = ${event.looptime}, setting it to 60000ms for now;`);
-          event.looptime = 60000;
-        }
-        if (!event.run || (event.active==false)) {
-          winston.error(`${event.name} has no defined run function or was deactivated`);
-          return;
-        }
-        console.log(`starting ${event.name} event loop every ${event.looptime}ms`);
-        event.runtime = setInterval(event.run, event.looptime, client); //.catch(err => winston.error(err))
-      });
-    }
+      if (commandfile.events) { //loading Events
+        commandfile.events.forEach(async (event) => {
+          if(! event.looptime || event.looptime < 50) {
+            winston.warn(`${event.name} has looptime = ${event.looptime}, setting it to 60000ms for now;`);
+            event.looptime = 60000;
+          }
+          if (!event.run || (event.active==false)) {
+            winston.error(`${event.name} has no defined run function or was deactivated`);
+            return;
+          }
+          console.log(`starting ${event.name} event loop every ${event.looptime}ms`);
+          event.runtime = setInterval(event.run, event.looptime, client); //.catch(err => winston.error(err))
+        });
+      }
+    });
   });
-});
+}
+function resetCommands(){
+  delete client.commands, client.aliases, client.triggers, client.events;
+  loadCommands();
+}
+loadCommands(); //ACTUALLY loading commands
 
 client.on('ready', () => { // tell them when you're ready
-  module.exports = {"client": client};
+  module.exports = {"client": client, "resetcommands": resetCommands};
   const consoleinput = require('./consoleinput');
 
   console.log("\n\n\n\nREADY - CLI initialized");
