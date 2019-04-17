@@ -11,12 +11,27 @@ const client = new Discord.Client({
 });
 client.login(auth.token);//needed
 
+winston.format.combine(
+  winston.format.colorize(),
+  winston.format.json()
+);
 winston.remove(winston.transports.Console);
 let moment = require('moment');
-winston.add( new winston.transports.File({ filename: `logs/${moment().format('DD.MM.YYYY')}.log`, level: 'debug' }));
-winston.add(new winston.transports.Console(), {
-    colorize: true,
-    level: 'silly'
+winston.add( new winston.transports.File({ filename: `logs/${moment().format('DD.MM.YYYY')}.log`, level: 'debug', format:     winston.format.combine(
+  winston.format.timestamp(),
+  // winston.format.simple(),
+  winston.format.printf(info => `${info.timestamp} [${info.level}]: ${info.message}`),
+)}));
+winston.add(new winston.transports.Console({
+  format : winston.format.combine(
+    winston.format.colorize(),
+    winston.format.timestamp(),
+    // winston.format.simple(),
+    winston.format.printf(info => `${info.timestamp} [${info.level}]: ${info.message}`),
+  )
+}), {
+  // colorize: true,
+  // level: 'silly'
 });
 // winston.level = 'info';
   // new winston.transports.File({ filename: 'error.log', level: 'error' });
