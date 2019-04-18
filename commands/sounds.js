@@ -65,7 +65,30 @@ module.exports = {
         }
       }
     },
-    { //sound
+    {
+      "name":"pause",
+      "description":"",
+      "run": async function run(client, msg, args){
+        if (false && msg.guild.voiceConnection) {
+
+        }
+        // await msg.guild.voiceConnection.dispatcher.stream.pause();
+        msg.guild.voiceConnection.dispatcher.pause();
+      }
+    },
+    {
+      "name":"unpause",
+      "aliases":['resume'],
+      "description":"",
+      "run": async function run(client, msg, args){
+        if (false && msg.guild.voiceConnection) {
+
+        }
+        // await msg.guild.voiceConnection.dispatcher.stream.resume();
+        msg.guild.voiceConnection.dispatcher.resume();
+      }
+    },
+    { //sound OLD much TODO here
       "name":"sound",
       "description": "still not entirely implemented",
       "MemberOnly": true,
@@ -95,7 +118,6 @@ module.exports = {
           msg.reply(`You are not in a voiceChannel`);
           return;
         }
-        IsReady = 0;
         await VC.join().then(connection => {
           let dispatcher = connection.playFile(path);
           dispatcher.on("end", end => {
@@ -107,26 +129,28 @@ module.exports = {
 
       }
     },
-    {
+    { //echoing
       "name":"echoing",
       "description":"i wouldn't recommend trying this...",
       "adminOnly":true,
       "run": async function run(client, msg, args){
         var VoiceCon = await msg.guild.voiceConnection;
         var receiver = await VoiceCon.createReceiver();
+        console.log(receiver);
         receiver.on('warn', (err)=> winston.error('voice receiver ' + err));
         VoiceCon.on('warn', (err)=> winston.error('voiceconnection ' + err));
         VoiceCon.on('speaking', (speaker, bool) => {
           console.log(`speaking: ${speaker.username} = ${bool}`);
+          if (receiver.destroyed) {winston.debug(`receiver was destroyed`); return;}
           if (!bool)  return; // don't execute if stopped speaking
-          var readableStream = receiver.createPMCStream(speaker);
+          var readableStream = receiver.createPCMStream(speaker);
           readableStream.on('data', (chunk)=>console.log(`received ${chunk.length} bytes`));
-          msg.guild.voiceConnection.playStream(readableStream);
+          VoiceCon.playStream(readableStream);
         });
       }
     },
-    {
-      "name":"recog",
+    { //voice recog via google API TODO
+      // "name":"recog",
       "aliases":[''],
       "description":"none yet",
       "adminOnly": true,

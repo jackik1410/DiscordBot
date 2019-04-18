@@ -9,11 +9,13 @@
     "discord.js": "^11.4.2",
     "ffmpeg": "0.0.4",
     "ffmpeg.js": "^3.1.9001",
+    "googleapis": "^39.2.0",
     "lowdb": "^1.0.0",
     "moment": "^2.24.0",
     "opusscript": "0.0.6",
     "readline-async": "^0.1.0",
     "simple-git": "^1.110.0",
-    "winston": "^3.2.1"
+    "winston": "^3.2.1",
+    "ytdl-core": "^0.29.1"
   }
 }
