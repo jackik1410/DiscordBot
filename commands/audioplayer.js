@@ -55,7 +55,7 @@ module.exports = {
 
       }
     },
-    { //leave
+    {//leave
       "name":"leave",
       "description":"",
       "run": async function run(client, msg, args) {
@@ -65,30 +65,37 @@ module.exports = {
         }
       }
     },
-    {
+    {//pause
       "name":"pause",
-      "description":"",
+      "description":"pauses playback, undo with 'unpause'",
       "run": async function run(client, msg, args){
-        if (false && msg.guild.voiceConnection) {
-
+        if (msg.guild.voiceConnection && !msg.guild.voiceConnection.dispatcher.paused) {
+          msg.guild.voiceConnection.dispatcher.pause();
+        } else {
+          msg.reply('there is nothing to pause for me');
         }
-        // await msg.guild.voiceConnection.dispatcher.stream.pause();
-        msg.guild.voiceConnection.dispatcher.pause();
       }
     },
-    {
+    {//unpause, resume
       "name":"unpause",
       "aliases":['resume'],
-      "description":"",
+      "description":"resumes playback",
       "run": async function run(client, msg, args){
-        if (false && msg.guild.voiceConnection) {
-
+        if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher.paused) {
+          msg.guild.voiceConnection.dispatcher.resume();
+        } else {
+          msg.reply('there is nothing to resume for me');
         }
-        // await msg.guild.voiceConnection.dispatcher.stream.resume();
-        msg.guild.voiceConnection.dispatcher.resume();
       }
     },
-    { //sound OLD much TODO here
+    {//stop
+      "name":"stop",
+      "description":"Completely stops playback",
+      "run": async function run(client, msg, args){
+        msg.guild.voiceConnection.dispatcher.end();
+      }
+    },
+    {//sound OLD much TODO here
       "name":"sound",
       "description": "still not entirely implemented",
       "MemberOnly": true,
@@ -129,7 +136,7 @@ module.exports = {
 
       }
     },
-    { //echoing
+    {//echoing
       "name":"echoing",
       "description":"i wouldn't recommend trying this...",
       "adminOnly":true,
@@ -149,7 +156,7 @@ module.exports = {
         });
       }
     },
-    { //voice recog via google API TODO
+    {//voice recog via google API TODO
       // "name":"recog",
       "aliases":[''],
       "description":"none yet",
