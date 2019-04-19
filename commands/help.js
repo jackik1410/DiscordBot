@@ -42,7 +42,7 @@ module.exports = {
     });
 
   //double checking roles
-    if ( msg.channel.type != 'dm' && msg.member.roles.find("name", "Mitbewohner")) {
+    if ( msg.channel.type != 'dm' && msg.member.roles.find(r => r.name == "Mitbewohner")) {
       membercommands = "\nMember Commands: ```javascript\n" + membercommands+"```";
     }
     if (OPs.admins.includes(msg.author.id)) {
