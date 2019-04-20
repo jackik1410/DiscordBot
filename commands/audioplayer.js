@@ -45,7 +45,7 @@ module.exports = {
           msg.reply(`You are not in a voiceChannel`);
           return;
         }
-        if (msg.guild.voiceConnection != null && msg.guild.voiceConnection.channel != VC) {
+        if (msg.guild.voiceConnection != null && msg.guild.voiceConnection.channel == VC) {
           msg.reply(`I know, i know, don't rush me, i'm already there!`);
           return;
         }
