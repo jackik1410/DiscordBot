@@ -7,8 +7,10 @@ cls
 :loop
 cls
 call node bot.js
-::pause
-  ::for better error diagnosis, uncomment if wanted
-timeout /t 1 /nobreak
+if %ERRORLEVEL% NEQ 0 ( ::pauses if didn't exit smoothly, recommended only if bot not on a remote machiene
+  pause
+)
+
+::timeout /t 1 /nobreak
 
 goto loop

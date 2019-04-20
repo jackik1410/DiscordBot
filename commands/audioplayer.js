@@ -60,8 +60,10 @@ module.exports = {
       "description":"",
       "run": async function run(client, msg, args) {
         if (msg.guild.voiceConnection) { //doesn't need checks, just doesn't do anything if not intended
-          console.log('disconnecting from voiceChannel');
+        if (msg.member.voiceChannel || OPs.admins.includes(msg.author.id)) {
           msg.guild.voiceConnection.disconnect();
+        }
+          // console.log('disconnecting from voiceChannel');
         }
       }
     },
