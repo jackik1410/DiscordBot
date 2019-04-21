@@ -71,7 +71,7 @@ module.exports = {
       "name":"pause",
       "description":"pauses playback, undo with 'unpause'",
       "run": async function run(client, msg, args){
-        if (msg.guild.voiceConnection && !msg.guild.voiceConnection.dispatcher.paused) {
+        if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher && !msg.guild.voiceConnection.dispatcher.paused) {
           msg.guild.voiceConnection.dispatcher.pause();
         } else {
           msg.reply('there is nothing to pause for me');
@@ -83,7 +83,7 @@ module.exports = {
       "aliases":['resume'],
       "description":"resumes playback",
       "run": async function run(client, msg, args){
-        if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher.paused) {
+        if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher && msg.guild.voiceConnection.dispatcher.paused) {
           msg.guild.voiceConnection.dispatcher.resume();
         } else {
           msg.reply('there is nothing to resume for me');
@@ -94,7 +94,11 @@ module.exports = {
       "name":"stop",
       "description":"Completely stops playback",
       "run": async function run(client, msg, args){
-        msg.guild.voiceConnection.dispatcher.end();
+        if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher) {
+          msg.guild.voiceConnection.dispatcher.end();
+        } else {
+          msg.channel.send('There is nothing to stop for me here...');
+        }
       }
     },
     {//sound OLD much TODO here
@@ -172,14 +176,14 @@ module.exports = {
           const googleclient = new speech.SpeechClient();
 
           // The name of the audio file to transcribe
-          const fileName = './resources/audio.raw';
+          var fileName = './resources/audio.raw';
 
           // Reads a local audio file and converts it to base64
           const file = fs.readFileSync(fileName);
           const audioBytes = file.toString('base64');
 
           // The audio file's encoding, sample rate in hertz, and BCP-47 language code
-          const audio = {
+          var audio = {
             content: audioBytes,
           };
           const config = {

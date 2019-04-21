@@ -9,19 +9,22 @@ const ytapi = google.youtube({
 });
 // Gapi.setApiKey('AIzaSyCCbbERdJGtOGk_j4xuESfESAEvcf2d7EM');
 
-function playlistmsg(msg){
-
+async function getplaylistmsg(msg){
+  if (msg.guild.playlistmsg) {
+    return await msg.guild.playlistmsg.then(m => {
+        return m;
+    });
+  }
+  return undefined;
 }
 
 function showPlaylist(client, msg){ //shows and updates
-  var playlistmsg = {};
+  var playlistmsg = getplaylistmsg(msg);
   if (msg.guild.playlistmsg) {
-    msg.guild.playlistmsg.then(g => {
-      // g.channel.fetchMessage(msg.guild.playlistmsg.id).then(m => {
-        playlistmsg = g;
-      // });
-    });
-    // playlistmsg = msg.guild.playlistmsg;
+    // msg.guild.playlistmsg.then(m => {
+    //     playlistmsg = m;
+    // });
+    //  // playlistmsg = msg.guild.playlistmsg;
 
     if (!msg.guild.currentlyPlaying) {
       playlistmsg.delete();
@@ -47,12 +50,19 @@ function showPlaylist(client, msg){ //shows and updates
     }
     message.embed.description += "\n QUEUED:" + queuelist;
   }
+  //delete message if nothing is being played, or setting is on for guild
+  if ((playlistmsg && !playlistmsg.deleted && false) || (!msg.guild.currentlyPlaying && playlistmsg && !playlistmsg.deleted)) {
+    playlistmsg.delete();
+  }
 
-  if (playlistmsg && playlistmsg.editable && !playlistmsg.deleted) {
-    playlistmsg.edit(message); //only edit if was already sent and not deleted
+  if (playlistmsg && !playlistmsg.deleted && playlistmsg.editable) {
+    playlistmsg.edit(message.content, message.embed); //only edit if was already sent and not deleted
   } else {
+    winston.debug(`playlistmsg: ${playlistmsg}; editable: ${playlistmsg.editable}; deleted: ${playlistmsg.deleted}`);
     msg.guild.playlistmsg = msg.channel.send(message);
   }
+
+  //TODO add reaction emojis so that pausing, unpausing and skipping cost only a single click
 }
 
 
@@ -73,6 +83,9 @@ module.exports = {
 
         // Play streams using ytdl-core
         const streamOptions = { seek: 0, volume: 0.25 };
+        if (!msg.guild.streamOptions) {
+          msg.guild.streamOptions = streamOptions;
+        }
         var stream = '';
         var queueobj = {};//not populated here, only defined for higher scope
         try {
@@ -110,16 +123,17 @@ module.exports = {
           }
           showPlaylist(client, msg);
         } else { //directly playing
-          msg.guild.voiceConnection.playStream(stream, streamOptions);
+          msg.guild.voiceConnection.playStream(stream, msg.guild.streamOptions);
           msg.guild.currentlyPlaying = queueobj;
           showPlaylist(client, msg);
         }
 
         //stop dispatcher if queue empty, else start next song/video
-        msg.guild.voiceConnection.dispatcher.on('end', async () => {
+        msg.guild.voiceConnection.dispatcher.on('end', (reason) => {
+          console.log(reason);
           if (msg.guild.playqueue && msg.guild.playqueue.length >0) {//playing from queue
             msg.guild.currentlyPlaying = msg.guild.playqueue.shift(); //moves object to play from queue
-            msg.guild.voiceConnection.playStream(msg.guild.currentlyPlaying.stream, streamOptions);
+            msg.guild.voiceConnection.playStream(msg.guild.currentlyPlaying.stream, msg.guild.streamOptions);
           } else {
             // msg.guild.voiceConnection.dispatcher.end(); //should have just happened anyway...
             delete msg.guild.currentlyPlaying;
