@@ -19,7 +19,8 @@ async function getplaylistmsg(msg){
 }
 
 function showPlaylist(client, msg){ //shows and updates
-  var playlistmsg = getplaylistmsg(msg);
+  // var playlistmsg = getplaylistmsg(msg);
+  var playlistmsg = msg.guild.playlistmsg;
   if (msg.guild.playlistmsg) {
     // msg.guild.playlistmsg.then(m => {
     //     playlistmsg = m;
@@ -35,6 +36,7 @@ function showPlaylist(client, msg){ //shows and updates
   var message = {
     "embed": {
       "title":"**Now Playing:**",
+      'video': msg.guild.currentlyPlaying.url,
       "color": 2728740,
       "description":`[${msg.guild.currentlyPlaying.name}](${msg.guild.currentlyPlaying.url})`
     }
@@ -55,16 +57,43 @@ function showPlaylist(client, msg){ //shows and updates
     playlistmsg.delete();
   }
 
-  if (playlistmsg && !playlistmsg.deleted && playlistmsg.editable) {
+  if (playlistmsg && !msg.guild.playlistmsg.deleted && playlistmsg.editable) {
     playlistmsg.edit(message.content, message.embed); //only edit if was already sent and not deleted
   } else {
-    winston.debug(`playlistmsg: ${playlistmsg}; editable: ${playlistmsg.editable}; deleted: ${playlistmsg.deleted}`);
-    msg.guild.playlistmsg = msg.channel.send(message);
+    // winston.debug(`playlistmsg: ${playlistmsg}; editable: ${playlistmsg.editable}; deleted: ${playlistmsg.deleted}`);
+    msg.channel.send(message).then(m => {
+      msg.guild.playlistmsg = m;
+
+      //TODO add reaction emojis so that pausing, unpausing and skipping cost only a single click
+      ['⏯','⏭'].forEach(opt => {
+        m.react(opt);
+      });
+
+      // new Discord.ReactionCollector(messagefilteroptions);
+      m.awaitReactions(obj => {
+        // console.log(obj.message);
+        obj.message.reactions.find(reaction => {
+          console.log(reaction);
+          //find first emote not from bot, act on it, delete afterwards
+          // if (!reaction.me) return true; //doesn'T work like that
+          if (reaction.count >2) return true;
+        });
+      });
+
+    });
   }
 
-  //TODO add reaction emojis so that pausing, unpausing and skipping cost only a single click
 }
 
+function resumePause(msg){
+  if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher) {
+    if (msg.guild.dispatcher.paused) {
+      msg.guild.dispatcher.resume();
+    } else {
+      msg.guild.dispatcher.pause();
+    }
+  }
+}
 
 module.exports = {
   "CommandArray":[
@@ -147,6 +176,7 @@ module.exports = {
           winston.debug(info);
           // showPlaylist(client, msg); //to update when pausing/unpausing playback
         });
+        msg.guild.voiceConnection.dispatcher.on('error', winston.error);
       }
     },
     { //skip
