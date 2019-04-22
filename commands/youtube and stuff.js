@@ -9,14 +9,15 @@ const ytapi = google.youtube({
 });
 // Gapi.setApiKey('AIzaSyCCbbERdJGtOGk_j4xuESfESAEvcf2d7EM');
 
-async function getplaylistmsg(msg){
-  if (msg.guild.playlistmsg) {
-    return await msg.guild.playlistmsg.then(m => {
-        return m;
-    });
-  }
-  return undefined;
-}
+//  //i MAY revet to using a promise, might be handlier in some cases...
+// async function getplaylistmsg(msg){
+//   if (msg.guild.playlistmsg) {
+//     return await msg.guild.playlistmsg.then(m => {
+//         return m;
+//     });
+//   }
+//   return undefined;
+// }
 
 function showPlaylist(client, msg){ //shows and updates
   // var playlistmsg = getplaylistmsg(msg);
@@ -56,8 +57,9 @@ function showPlaylist(client, msg){ //shows and updates
     }
     message.embed.description += "\n QUEUED:" + queuelist;
   }
+
   //delete message if nothing is being played, or setting is on for guild
-  var alwaysNewMessage = true;//Will be moved to guild settings
+  var alwaysNewMessage = true;//Will be moved to guild settings... maybe... probably not...
   if ((playlistmsg && !playlistmsg.deleted && alwaysNewMessage) || (!msg.guild.currentlyPlaying && playlistmsg && !playlistmsg.deleted)) {
     playlistmsg.delete();
   }
@@ -65,7 +67,7 @@ function showPlaylist(client, msg){ //shows and updates
   if (playlistmsg && !msg.guild.playlistmsg.deleted && playlistmsg.editable && !alwaysNewMessage) {
     playlistmsg.edit(message.content, message.embed); //only edit if was already sent and not deleted
   } else {
-    // winston.debug(`playlistmsg: ${playlistmsg}; editable: ${playlistmsg.editable}; deleted: ${playlistmsg.deleted}`);
+
     msg.channel.send(message).then(m => {
       msg.guild.playlistmsg = m;
 
@@ -163,8 +165,11 @@ module.exports = {
         }
 
         //stop dispatcher if queue empty, else start next song/video
+        msg.guild.voiceConnection.dispatcher.stream.on('end', (reason) => {
+          msg.guild.voiceConnection.dispatcher.end();
+        });
         msg.guild.voiceConnection.dispatcher.on('end', (reason) => {
-          console.log(reason);
+          // console.log(reason);
           if (msg.guild.playqueue && msg.guild.playqueue.length >0) {//playing from queue
             msg.guild.currentlyPlaying = msg.guild.playqueue.shift(); //moves object to play from queue
             msg.guild.voiceConnection.playStream(msg.guild.currentlyPlaying.stream, msg.guild.streamOptions);
@@ -177,22 +182,22 @@ module.exports = {
           //no queue, nothing else
         });
 
+
+          //ADDITIONAL INFO HANDLING, only shows, doesn't do anything else
+        msg.guild.voiceConnection.dispatcher.on('error', winston.error);
         msg.guild.voiceConnection.dispatcher.on('debug', async (info)  => {
-          winston.debug(info);
+          winston.debug("dispatcher "+info);
           // showPlaylist(client, msg); //to update when pausing/unpausing playback
         });
-        msg.guild.voiceConnection.dispatcher.on('error', winston.error);
-
 
         msg.guild.voiceConnection.dispatcher.stream.on('error', winston.error);
         msg.guild.voiceConnection.dispatcher.stream.on('debug', async (info)  => {
-          winston.debug(info);
+          winston.debug("stream "+info);
         });
-
 
         msg.guild.voiceConnection.dispatcher.player.on('error', winston.error);
         msg.guild.voiceConnection.dispatcher.player.on('debug', async (info)  => {
-          winston.debug(info);
+          winston.debug("player "+info);
         });
 
       }

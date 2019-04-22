@@ -44,16 +44,19 @@ module.exports = {
         }
       }
     },
-    {
-      "name":"",
+    { // bot stats             shows embeded message with some stats of the bot
+      "name":"bot",
+      "aliases":['botinfo', 'generalinfo', 'botstats', 'stats'],
       "description": "displays general information about the bot",
       "run": async function run(client, msg, args){
         msg.channel.send({
           "embed":{
-            "title": client.username,
-            "description":`Bot is used on ${msg.guilds.length} Servers`
+            "title": client.user.username + " stats:",
+            "description":`Bot is used on **${client.guilds.array().length}** Servers
+            Currently connected to **${client.voiceConnections.array().length}** Voice Channels
+            `
           }
-        });
+        }).then(m => m.delete(1000*60*5));//timeout is in milliseconds
       }
     },
     { //todolist
