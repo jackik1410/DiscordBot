@@ -44,19 +44,57 @@ module.exports = {
         }
       }
     },
-    { //todo
+    {
+      "name":"",
+      "description": "displays general information about the bot",
+      "run": async function run(client, msg, args){
+        msg.channel.send({
+          "embed":{
+            "title": client.username,
+            "description":`Bot is used on ${msg.guilds.length} Servers`
+          }
+        });
+      }
+    },
+    { //todolist
       "name": "todo",
       "description": "adds items to the dev's todo list, pls do not abuse",
       "adminOnly": true,
       "run": async function run(client, msg, args, command, db) {
-        let todolist = await db.get(`todolist`).value();
+        var todolist = await db.get('todolist').value() || [];
+        // console.log(todolist);
         switch (args[0]) {
+          case 'show'://fall-through
+          case 'list':
+            var list = [];
+            for (var i = 0; i < todolist.length; i++) {
+              list.push({
+                "name": `-${i} ` + todolist[i].content,
+                "value":todolist[i].author.name
+              });
+            }
+
+            // await todolist.forEach(elem => {
+            //   list.push({
+            //     "name":elem.content,
+            //     "value":elem.author.name
+            //   });
+            // });
+            msg.author.send({
+              "embed":{
+                "title":"TODOLIST:",
+                "description":"",
+                "fields":list
+              }
+            });
+            break;
           case 'add':
-            todolist.push({"author":msg.author, "content":msg.content.slice(1+command.length+1)});
-            db.set(`todolist`,todolist).write();
+            await todolist.push({"author":{"id":msg.author.id, "name":msg.author.username}, "content":msg.content.slice(client.prefix.length+command.length+1)});
+            // console.log(todolist);
+            db.set('todolist', todolist).write();
             break;
           default:
-
+            msg.channel.send("I didn't understand that");
         }
         // db.set(`todolist`, [{"author":msg.author, "content":msg.content.slice(1+command.length+1)}].concat(db.get(`todolist`).value())).write();
       }

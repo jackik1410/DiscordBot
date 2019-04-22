@@ -33,11 +33,15 @@ function showPlaylist(client, msg){ //shows and updates
     }
   }
 
+  var now = new Date();
   var message = {
     "embed": {
       "title":"**Now Playing:**",
-      'video': msg.guild.currentlyPlaying.url,
+      // 'video':{'url': msg.guild.currentlyPlaying.url},
+      'thumbnail':{"url":msg.guild.currentlyPlaying.thumbnail||'https://cdn.discordapp.com/embed/avatars/2.png'},
       "color": 2728740,
+      'timestamp': now.toJSON(),
+      "author":{'name': msg.guild.me.nickname},
       "description":`[${msg.guild.currentlyPlaying.name}](${msg.guild.currentlyPlaying.url})`
     }
   };
@@ -53,11 +57,12 @@ function showPlaylist(client, msg){ //shows and updates
     message.embed.description += "\n QUEUED:" + queuelist;
   }
   //delete message if nothing is being played, or setting is on for guild
-  if ((playlistmsg && !playlistmsg.deleted && false) || (!msg.guild.currentlyPlaying && playlistmsg && !playlistmsg.deleted)) {
+  var alwaysNewMessage = true;//Will be moved to guild settings
+  if ((playlistmsg && !playlistmsg.deleted && alwaysNewMessage) || (!msg.guild.currentlyPlaying && playlistmsg && !playlistmsg.deleted)) {
     playlistmsg.delete();
   }
 
-  if (playlistmsg && !msg.guild.playlistmsg.deleted && playlistmsg.editable) {
+  if (playlistmsg && !msg.guild.playlistmsg.deleted && playlistmsg.editable && !alwaysNewMessage) {
     playlistmsg.edit(message.content, message.embed); //only edit if was already sent and not deleted
   } else {
     // winston.debug(`playlistmsg: ${playlistmsg}; editable: ${playlistmsg.editable}; deleted: ${playlistmsg.deleted}`);
@@ -65,20 +70,20 @@ function showPlaylist(client, msg){ //shows and updates
       msg.guild.playlistmsg = m;
 
       //TODO add reaction emojis so that pausing, unpausing and skipping cost only a single click
-      ['⏯','⏭'].forEach(opt => {
-        m.react(opt);
-      });
-
-      // new Discord.ReactionCollector(messagefilteroptions);
-      m.awaitReactions(obj => {
-        // console.log(obj.message);
-        obj.message.reactions.find(reaction => {
-          console.log(reaction);
-          //find first emote not from bot, act on it, delete afterwards
-          // if (!reaction.me) return true; //doesn'T work like that
-          if (reaction.count >2) return true;
-        });
-      });
+      // ['⏯','⏭'].forEach(opt => {
+      //   m.react(opt);
+      // });
+      //
+      // // new Discord.ReactionCollector(messagefilteroptions);
+      // m.awaitReactions(obj => {
+      //   // console.log(obj.message);
+      //   obj.message.reactions.find(reaction => {
+      //     console.log(reaction);
+      //     //find first emote not from bot, act on it, delete afterwards
+      //     // if (!reaction.me) return true; //doesn'T work like that
+      //     if (reaction.count >2) return true;
+      //   });
+      // });
 
     });
   }
@@ -135,7 +140,7 @@ module.exports = {
             stream = await ytdl(chosenresult.id.videoId, {filter : 'audioonly'});
             // console.log(results.items);
             // console.log(chosenresult);
-            queueobj = {'name': chosenresult.snippet.title, 'url':'https://www.youtube.com/watch?v='+chosenresult.id.videoId, 'id': chosenresult.id.videoId, 'stream':stream};
+            queueobj = {'name': chosenresult.snippet.title, 'url':'https://www.youtube.com/watch?v='+chosenresult.id.videoId, 'id': chosenresult.id.videoId, 'stream':stream, 'thumbnail': chosenresult.snippet.thumbnails.default.url};
           } else {
             winston.error(err);
             msg.channel.reply("there was an error and it seems I can't play that, please try again");
@@ -177,6 +182,19 @@ module.exports = {
           // showPlaylist(client, msg); //to update when pausing/unpausing playback
         });
         msg.guild.voiceConnection.dispatcher.on('error', winston.error);
+
+
+        msg.guild.voiceConnection.dispatcher.stream.on('error', winston.error);
+        msg.guild.voiceConnection.dispatcher.stream.on('debug', async (info)  => {
+          winston.debug(info);
+        });
+
+
+        msg.guild.voiceConnection.dispatcher.player.on('error', winston.error);
+        msg.guild.voiceConnection.dispatcher.player.on('debug', async (info)  => {
+          winston.debug(info);
+        });
+
       }
     },
     { //skip

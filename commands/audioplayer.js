@@ -101,6 +101,25 @@ module.exports = {
         }
       }
     },
+    {
+      "name":"volume",
+      "description":"Sets the volume",
+      "run": async function run(client, msg, args){
+        if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher) {
+          if (args[0]) {
+            if (args[0] && 0 <= args[0] && args[0] <= 10 ) {
+              msg.guild.voiceConnection.dispatcher._volume= args[0];
+            } else {
+              msg.reply(`Argument needs to be valid, accepts values between 0-`);
+            }
+          } else {
+            msg.channel.send(`Current volume: ${msg.guild.voiceConnection.dispatcher._volume}`);
+          }
+        } else {
+          msg.reply("i couldn't do that");
+        }
+      }
+    },
     {//sound OLD much TODO here
       "name":"sound",
       "description": "still not entirely implemented",

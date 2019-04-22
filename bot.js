@@ -15,6 +15,7 @@ const client = new Discord.Client({
 client.login(auth.token);//needed
 
 process.title = `running V-WG Bot`;
+client.prefix = "!";
 
 
 //file handler for commands
@@ -103,6 +104,10 @@ client.on('ready', () => { // tell them when you're ready
 });
 
 client.on('error', (error) => {
+  if (error.match('ECONNRESET')) {
+    winston.info('Client suffered ECONNRESET, error caught, carrying on...');
+    return;
+  }
   winston.error(error);
 });
 
@@ -154,12 +159,12 @@ client.on('message', async msg => {
 
 
   //HERE START THE COMMANDS
-  if (0!= msg.content.startsWith('!')) {} else return; //only act when called
+  if (0!= msg.content.startsWith(client.prefix)) {} else return; //only act when called
 
   var args = msg.content.slice(1).trim().split(/ +/g);
   var command = args.shift().toLowerCase();
   //commandhandler
-  let ListedCommand = client.commands.get(command) || client.commands.get(client.aliases.get(command)) || client.aliases.get(command);
+  var ListedCommand = client.commands.get(command) || client.commands.get(client.aliases.get(command)) || client.aliases.get(command);
   if (ListedCommand) {
     if (ListedCommand.adminOnly == true && !OPs.admins.includes(msg.author.id)){
       msg.reply(`I'm sorry, i can't let you do that ${msg.author.toString()}`);
@@ -169,11 +174,11 @@ client.on('message', async msg => {
       msg.reply(`It seems you weren't invited to the party ${msg.author.username}, only Members are allowed that command on the V-WG server.`);
     }
     ListedCommand.run(client, msg, args, command, db).catch(err => winston.error(err));
-    let info = "";
+
     if (OPs.RealAdmins.includes(msg.author.id)) {
-      info = `Admin ${msg.author.username} ran command: ${msg.content.slice(1)}`;
+      var info = `Admin ${msg.author.username} ran command: ${msg.content.slice(1)}`;
     } else {
-      info = `${msg.author.toString()} ran command: ${msg.content.slice(1)}`;
+      var info = `${msg.author.toString()} ran command: ${msg.content.slice(1)}`;
     }
     winston.info(info);
     return;
