@@ -56,7 +56,9 @@ module.exports = {
             Currently connected to **${client.voiceConnections.array().length}** Voice Channels
             `
           }
-        }).then(m => m.delete(1000*60*5));//timeout is in milliseconds
+        }).then((m) => {
+          m.delete(1000*60*5).then(console.log('deleted stats message'));
+        });//timeout is in milliseconds
       }
     },
     { //todolist

@@ -101,7 +101,7 @@ module.exports = {
         }
       }
     },
-    {
+    {//volume
       "name":"volume",
       "description":"Sets the volume",
       "run": async function run(client, msg, args){

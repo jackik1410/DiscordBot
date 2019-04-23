@@ -19,7 +19,25 @@ const ytapi = google.youtube({
 //   return undefined;
 // }
 
-function showPlaylist(client, msg){ //shows and updates
+//control emojis
+// var client = require('../bot.js').client;
+
+
+//used to control the dispatcher via emotes appended to the queue message
+var ctremoji = {
+  // '⏯':client.commands.get('').run(client, msg, []),
+  '⏭':function run(client, msg) {client.commands.get('skip').run(client, msg, [])},
+  // '🔁':client.commands.get('').run(client, msg, []),
+  // '🔂':'';
+  '⏹':function run(client, msg) {client.commands.get('stop').run(client, msg, [])},
+  '⏸':function run(client, msg) {client.commands.get('pause').run(client, msg, [])},
+  '▶':function run(client, msg) {client.commands.get('unpause').run(client, msg, [])},
+};
+
+
+
+function showPlaylist(client, msg, args){ //shows and updates
+
   // var playlistmsg = getplaylistmsg(msg);
   var playlistmsg = msg.guild.playlistmsg;
   if (msg.guild.playlistmsg) {
@@ -68,22 +86,38 @@ function showPlaylist(client, msg){ //shows and updates
     playlistmsg.edit(message.content, message.embed); //only edit if was already sent and not deleted
   } else {
 
-    msg.channel.send(message).then(m => {
-      msg.guild.playlistmsg = m;
+    msg.channel.send(message).then(async (m) => {
+      msg.guild.playlistmsg = m;//updating the saved message
 
       //TODO add reaction emojis so that pausing, unpausing and skipping cost only a single click
-      // ['⏯','⏭'].forEach(opt => {
-      //   m.react(opt);
-      // });
-      //
-      // // new Discord.ReactionCollector(messagefilteroptions);
+      await Object.keys(ctremoji).forEach((emote) => {
+        m.react(emote);
+      });
+
+      // new Discord.ReactionCollector(messagefilteroptions);
+      const filter = (reaction, user) => Object.keys(ctremoji).includes(reaction.emoji.name);
+      m.createReactionCollector(filter).on('collect', async r => {
+        console.log(r);
+        r.remove(r.users);
+        ctremoji[r.emoji.name].run(client, msg);
+      });
+
+
       // m.awaitReactions(obj => {
       //   // console.log(obj.message);
       //   obj.message.reactions.find(reaction => {
       //     console.log(reaction);
-      //     //find first emote not from bot, act on it, delete afterwards
-      //     // if (!reaction.me) return true; //doesn'T work like that
-      //     if (reaction.count >2) return true;
+      //     //  //find first emote not from bot, act on it, delete afterwards
+      //     //  // if (!reaction.me) return true; //doesn'T work like that
+      //     if (reaction.count >1) return true;
+      //   });
+      // }).then(reactions => {
+      //   reactions.forEach(async (r) => {
+      //     console.log('found a reactable emote');
+      //     if (r.me && r.count >1 && Object.keys(ctremoji).includes(r.emojis.toString())) {
+      //       r.remove(r.users);
+      //       ctremoji.get(r.emoji.toString()).run(client, msg);
+      //     }
       //   });
       // });
 
@@ -165,9 +199,9 @@ module.exports = {
         }
 
         //stop dispatcher if queue empty, else start next song/video
-        msg.guild.voiceConnection.dispatcher.stream.on('end', (reason) => {
-          msg.guild.voiceConnection.dispatcher.end();
-        });
+        // msg.guild.voiceConnection.dispatcher.stream.on('end', (reason) => {
+        //   // msg.guild.voiceConnection.dispatcher.end();
+        // });
         msg.guild.voiceConnection.dispatcher.on('end', (reason) => {
           // console.log(reason);
           if (msg.guild.playqueue && msg.guild.playqueue.length >0) {//playing from queue
