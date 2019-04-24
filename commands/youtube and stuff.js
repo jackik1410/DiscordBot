@@ -36,11 +36,11 @@ var ctremoji = {
       }
     }
   },
-  // '🔁':client.commands.get('loop').run(client, msg, []),
   // '🔂':'';
-  '⏸': function (client, msg) {client.commands.get('pause').run(client, msg, []);},
-  '▶':  function (client, msg) {client.commands.get('unpause').run(client, msg, []);},
+  // '⏸': function (client, msg) {client.commands.get('pause').run(client, msg, []);},
+  // '▶':  function (client, msg) {client.commands.get('unpause').run(client, msg, []);},
   '⏭':function (client, msg) {client.commands.get('skip').run(client, msg, []);},
+  '🔁': function (client, msg) {client.commands.get('loop').run(client, msg, []);},
   '🔉': function (client, msg) {client.commands.get('volume').run(client, msg, ['down']);},
   '🔊': function (client, msg) {client.commands.get('volume').run(client, msg, ['up']);},
   '⏹': function (client, msg) {client.commands.get('stop').run(client, msg, []);},
@@ -58,22 +58,22 @@ function showPlaylist(client, msg, args, forceNewMessage){ //shows and updates
     // });
     //  // playlistmsg = msg.guild.playlistmsg;
 
-    if (!msg.guild.currentlyPlaying) {
-      playlistmsg.delete();
-      return; //exits if nothing left todo
-    }
+  }
+  if (!msg.guild.currentlyPlaying) {
+    playlistmsg.delete();
+    return; //exits if nothing left todo
   }
 
   var now = new Date();
   var message = {
     "embed": {
-      "title":"**Now Playing:**",
+      "title":`**${msg.guild.dispatcher.paused?(`⏸Now Pausing`):((msg.guild.loop)? `🔁Now Looping`:`▶Now Playing`)}:**`,
       // 'video':{'url': msg.guild.currentlyPlaying.url},
       'thumbnail':{"url":msg.guild.currentlyPlaying.thumbnail||'https://cdn.discordapp.com/embed/avatars/2.png'},
       "color": 2728740,
       'timestamp': now.toJSON(),
       "author":{'name': msg.guild.me.nickname},
-      "description":`[${msg.guild.currentlyPlaying.name}](${msg.guild.currentlyPlaying.url})`
+      "description":`[${msg.guild.currentlyPlaying.name}](${msg.guild.currentlyPlaying.url})`,
     }
   };
   if (msg.guild.voiceConnection.dispatcher.paused) message.title += '__(paused)__';
@@ -113,6 +113,7 @@ function showPlaylist(client, msg, args, forceNewMessage){ //shows and updates
         // console.log(r);
         r.remove(r.users.find(u => !u.bot));
         ctremoji[r.emoji.name](client, msg);
+        showPlaylist(client, msg, [], false);
       });
 
 
@@ -156,6 +157,9 @@ module.exports = {
       "name": "play",
       "description": "Provided with either keywords or url, plays audio stream over voiceChannel",
       "run": async function run(client, msg, args){
+        if (!msg.guild.playqueue) {
+          msg.guild.playqueue = [];
+        }
         if ( !msg.member.voiceChannel || !msg.guild.voiceConnection || msg.member.voiceChannel.id != msg.guild.voiceConnection.channel.id) {
           msg.reply('you can only do that if you are in the same voiceChannel as the bot');
           return;
@@ -200,11 +204,8 @@ module.exports = {
         //checking queue, creating it if necessary
         if (msg.guild.voiceConnection.dispatcher) {//queuing
           // var queueobj = {'url':url, 'stream':stream};
-          if (!msg.guild.playqueue) { //creating queue
-            msg.guild.playqueue = [queueobj];
-          } else { //adding to queue
-            msg.guild.playqueue.push(queueobj);
-          }
+          msg.guild.playqueue.push(queueobj);//adding to queue
+
           showPlaylist(client, msg);
         } else { //directly playing
           msg.guild.voiceConnection.playStream(stream, msg.guild.streamOptions);
@@ -218,6 +219,15 @@ module.exports = {
         // });
         msg.guild.voiceConnection.dispatcher.on('end', (reason) => {
           // console.log(reason);
+          if (msg.guild.loop == true) {
+            msg.guild.playqueue.push(msg.guild.currentlyPlaying);
+            msg.guild.currentlyPlaying = msg.guild.playqueue.shift();
+
+            msg.guild.voiceConnection.playStream(msg.guild.currentlyPlaying.stream, msg.guild.streamOptions);
+            showPlaylist(client, msg, [], false);
+            return;
+          }
+
           if (msg.guild.playqueue && msg.guild.playqueue.length >0) {//playing from queue
             msg.guild.currentlyPlaying = msg.guild.playqueue.shift(); //moves object to play from queue
             msg.guild.voiceConnection.playStream(msg.guild.currentlyPlaying.stream, msg.guild.streamOptions);
@@ -225,7 +235,7 @@ module.exports = {
             // msg.guild.voiceConnection.dispatcher.end(); //should have just happened anyway...
             delete msg.guild.currentlyPlaying;
           }
-          showPlaylist(client, msg);
+          showPlaylist(client, msg, []);
 
           //no queue, nothing else
         });
@@ -234,18 +244,18 @@ module.exports = {
           //ADDITIONAL INFO HANDLING, only shows, doesn't do anything else
         msg.guild.voiceConnection.dispatcher.on('error', winston.error);
         msg.guild.voiceConnection.dispatcher.on('debug', async (info)  => {
-          winston.debug("dispatcher "+info);
+          winston.debug("dispatcher " + info);
           // showPlaylist(client, msg); //to update when pausing/unpausing playback
         });
 
         msg.guild.voiceConnection.dispatcher.stream.on('error', winston.error);
         msg.guild.voiceConnection.dispatcher.stream.on('debug', async (info)  => {
-          winston.debug("stream "+info);
+          winston.debug("stream " + info);
         });
 
         msg.guild.voiceConnection.dispatcher.player.on('error', winston.error);
         msg.guild.voiceConnection.dispatcher.player.on('debug', async (info)  => {
-          winston.debug("player "+info);
+          winston.debug("player " + info);
         });
 
       }
@@ -258,6 +268,14 @@ module.exports = {
           msg.guild.voiceConnection.dispatcher.emit('end');
           // showPlaylist(client, msg);//is run when 'end' is emited anyway
         }
+      }
+    },
+    {
+      "name":"loop",
+      "description":"Toggles looping the queue",
+      "run": async function run(client, msg, args){
+        msg.guild.loop = !msg.guild.loop || true;
+        // showPlaylist(client, msg, [], false);
       }
     },
     // {
