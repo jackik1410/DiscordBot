@@ -101,6 +101,38 @@ module.exports = {
         }
       }
     },
+    {//volume
+      "name":"volume",
+      "description":"Sets the volume",
+      "run": async function run(client, msg, args){
+        var upperlimit = 10;
+        var lowerlimit = 0;
+        //msg.guild.settings.volume = ...;
+        if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher) {
+          if (args[0]) {
+            switch (args[0]) {
+              case 'up':
+                msg.guild.voiceConnection.dispatcher._volume *= 4/3;
+                return;
+              case 'down':
+                msg.guild.voiceConnection.dispatcher._volume *= 3/4;
+                return;
+              default:
+                //nothing
+            }
+            if (args[0] && 0 <= args[0] && args[0] <= 10 ) {
+              msg.guild.voiceConnection.dispatcher._volume= args[0];
+            } else  {
+              msg.reply(`Argument needs to be valid, accepts values between ${lowerlimit}-${upperlimit}`);
+            }
+          } else {
+            msg.channel.send(`Current volume: ${msg.guild.voiceConnection.dispatcher._volume}`);
+          }
+        } else {
+          msg.reply("i couldn't do that");
+        }
+      }
+    },
     {//sound OLD much TODO here
       "name":"sound",
       "description": "still not entirely implemented",
@@ -160,6 +192,25 @@ module.exports = {
           readableStream.on('data', (chunk)=>console.log(`received ${chunk.length} bytes`));
           VoiceCon.playStream(readableStream);
         });
+      }
+    },
+    {
+      "name":"mic",
+      "description":"",
+      "adminOnly":true,
+      "run": async function run(client, msg, args){
+        if (msg.guild.voiceConnection) {
+          msg.guild.voiceConnection.on('speaking', (user, bool) => {
+            console.log(`${user.username} is speaking: ${bool}`);
+            if (bool) {
+              var receiver = msg.guild.voiceConnection.createReceiver();
+              receiver.on('warn', console.log());
+              var stream = receiver.createOpusStream(user);
+              stream.on('error', console.log());
+              msg.guild.voiceConnection.playOpusStream(stream);
+            }
+          })
+        }
       }
     },
     {//voice recog via google API TODO

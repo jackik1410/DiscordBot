@@ -78,8 +78,15 @@ const db = low(adapter);
 
 
 async function restart(){
-  // winston.info('RESTARTING BOT');
-  // await msg.channel.send("restarting bot...");
+  winston.info('RESTARTING BOT');
+  if (false) {//notify all voiceChannel users with a short message
+    var broadcast = client.createVoiceBroadcast();;
+    await client.voiceConnections.forEach(async (connection) =>{
+      connection.playBroadcast(broadcast);
+    });
+    broadcast.playFile(`Sounds/`);
+  }
+
   const { spawn } = require('child_process');
 
   const subprocess = spawn(process.argv[0], [`../bot.js`], {
