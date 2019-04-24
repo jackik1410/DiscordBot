@@ -51,7 +51,7 @@ var ctremoji = {
 function showPlaylist(client, msg, args, forceNewMessage){ //shows and updates
 
   // var playlistmsg = getplaylistmsg(msg);
-  var playlistmsg = msg.guild.playlistmsg;
+  var playlistmsg = msg.guild.playlistmsg || undefined;
   if (msg.guild.playlistmsg) {
     // msg.guild.playlistmsg.then(m => {
     //     playlistmsg = m;
@@ -103,7 +103,7 @@ function showPlaylist(client, msg, args, forceNewMessage){ //shows and updates
 
       //TODO add reaction emojis so that pausing, unpausing and skipping cost only a single click
       Object.keys(ctremoji).forEach(async (emote) => {
-        await m.react(emote);
+        m.react(emote);
       });
 
       // new Discord.ReactionCollector(messagefilteroptions);
@@ -166,12 +166,14 @@ module.exports = {
         }
 
         // Play streams using ytdl-core
-        var streamOptions = { seek: 0, volume: 0.25 };
+        var streamOptions;
         if (!msg.guild.streamOptions) {
+          streamOptions = { seek: 0, volume: 0.25 };
           msg.guild.streamOptions = streamOptions;
+        } else {
+          streamOptions = msg.guild.streamOptions;
         }
-        var stream = '';
-        var queueobj = {};//not populated here, only defined for higher scope
+        var stream, queueobj; //not populated here, only defined for higher scope
         try {
           stream = ytdl(args[0], { filter : 'audioonly' });
           queueobj = {'name': args[0], 'url': args[0], 'id': 'none, working on it', 'stream':stream};
@@ -216,6 +218,8 @@ module.exports = {
         // msg.guild.voiceConnection.dispatcher.stream.on('end', (reason) => {
         //   // msg.guild.voiceConnection.dispatcher.end();
         // });
+
+
         msg.guild.voiceConnection.dispatcher.on('end', (reason) => {
           // console.log(reason);
           if (msg.guild.playqueue && msg.guild.playqueue.length >0) {//playing from queue
@@ -225,8 +229,7 @@ module.exports = {
             // msg.guild.voiceConnection.dispatcher.end(); //should have just happened anyway...
             delete msg.guild.currentlyPlaying;
           }
-          showPlaylist(client, msg);
-
+          showPlaylist(client, msg, [], false);
           //no queue, nothing else
         });
 
@@ -234,18 +237,18 @@ module.exports = {
           //ADDITIONAL INFO HANDLING, only shows, doesn't do anything else
         msg.guild.voiceConnection.dispatcher.on('error', winston.error);
         msg.guild.voiceConnection.dispatcher.on('debug', async (info)  => {
-          winston.debug("dispatcher "+info);
+          winston.debug("dispatcher " + info);
           // showPlaylist(client, msg); //to update when pausing/unpausing playback
         });
 
         msg.guild.voiceConnection.dispatcher.stream.on('error', winston.error);
         msg.guild.voiceConnection.dispatcher.stream.on('debug', async (info)  => {
-          winston.debug("stream "+info);
+          winston.debug("stream " + info);
         });
 
         msg.guild.voiceConnection.dispatcher.player.on('error', winston.error);
         msg.guild.voiceConnection.dispatcher.player.on('debug', async (info)  => {
-          winston.debug("player "+info);
+          winston.debug("player " + info);
         });
 
       }
@@ -255,6 +258,17 @@ module.exports = {
       "description":"skips the currently playing song",
       "run": async function run(client, msg, args){
         if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher) {
+          if (args[0] && typeof args[0] == 'number' && args[0] >0) {
+            console.log('entered if');
+            var i = args[0] - 1;
+            if (msg.guild.playqueue && msg.guild.playqueue[i]) {
+              msg.guild.playqueue.splice(i, 1);
+              showPlaylist(client, msg, args, false);
+            } else {
+              msg.channel.send(`Couldn't find element ${i+1} in the queue`);
+            }
+            return;
+          }
           msg.guild.voiceConnection.dispatcher.emit('end');
           // showPlaylist(client, msg);//is run when 'end' is emited anyway
         }
