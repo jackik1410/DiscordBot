@@ -7,6 +7,8 @@ const ytapi = google.youtube({
   version: 'v3',
   auth: 'AIzaSyCCbbERdJGtOGk_j4xuESfESAEvcf2d7EM'
 });
+
+
 // Gapi.setApiKey('AIzaSyCCbbERdJGtOGk_j4xuESfESAEvcf2d7EM');
 
 //  //i MAY revet to using a promise, might be handlier in some cases...
@@ -25,18 +27,28 @@ const ytapi = google.youtube({
 
 //used to control the dispatcher via emotes appended to the queue message
 var ctremoji = {
-  // '⏯':client.commands.get('').run(client, msg, []),
-  '⏭':function run(client, msg) {client.commands.get('skip').run(client, msg, [])},
-  // '🔁':client.commands.get('').run(client, msg, []),
+  '⏯':function (client, msg){
+    if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher) {
+      if (msg.guild.voiceConnection.dispatcher.paused) {
+        msg.guild.voiceConnection.dispatcher.resume();
+      } else {
+        msg.guild.voiceConnection.dispatcher.pause();
+      }
+    }
+  },
+  // '🔁':client.commands.get('loop').run(client, msg, []),
   // '🔂':'';
-  '⏹':function run(client, msg) {client.commands.get('stop').run(client, msg, [])},
-  '⏸':function run(client, msg) {client.commands.get('pause').run(client, msg, [])},
-  '▶':function run(client, msg) {client.commands.get('unpause').run(client, msg, [])},
+  '⏸': function (client, msg) {client.commands.get('pause').run(client, msg, []);},
+  '▶':  function (client, msg) {client.commands.get('unpause').run(client, msg, []);},
+  '⏭':function (client, msg) {client.commands.get('skip').run(client, msg, []);},
+  '🔉': function (client, msg) {client.commands.get('volume').run(client, msg, ['down']);},
+  '🔊': function (client, msg) {client.commands.get('volume').run(client, msg, ['up']);},
+  '⏹': function (client, msg) {client.commands.get('stop').run(client, msg, []);},
 };
 
 
 
-function showPlaylist(client, msg, args){ //shows and updates
+function showPlaylist(client, msg, args, forceNewMessage){ //shows and updates
 
   // var playlistmsg = getplaylistmsg(msg);
   var playlistmsg = msg.guild.playlistmsg;
@@ -64,7 +76,7 @@ function showPlaylist(client, msg, args){ //shows and updates
       "description":`[${msg.guild.currentlyPlaying.name}](${msg.guild.currentlyPlaying.url})`
     }
   };
-  if (msg.guild.voiceConnection.dispatcher.paused) message.content = '__(paused)__';
+  if (msg.guild.voiceConnection.dispatcher.paused) message.title += '__(paused)__';
 
   // var message = `**Now playing:** ${msg.guild.currentlyPlaying.name}`;
   if (msg.guild.playqueue && msg.guild.playqueue.length >0) {
@@ -90,16 +102,17 @@ function showPlaylist(client, msg, args){ //shows and updates
       msg.guild.playlistmsg = m;//updating the saved message
 
       //TODO add reaction emojis so that pausing, unpausing and skipping cost only a single click
-      await Object.keys(ctremoji).forEach((emote) => {
-        m.react(emote);
+      Object.keys(ctremoji).forEach(async (emote) => {
+        await m.react(emote);
       });
 
       // new Discord.ReactionCollector(messagefilteroptions);
       const filter = (reaction, user) => Object.keys(ctremoji).includes(reaction.emoji.name);
       m.createReactionCollector(filter).on('collect', async r => {
-        console.log(r);
-        r.remove(r.users);
-        ctremoji[r.emoji.name].run(client, msg);
+        if (!r.me || r.count <= 1) return;
+        // console.log(r);
+        r.remove(r.users.find(u => !u.bot));
+        ctremoji[r.emoji.name](client, msg);
       });
 
 
@@ -125,6 +138,7 @@ function showPlaylist(client, msg, args){ //shows and updates
   }
 
 }
+
 
 function resumePause(msg){
   if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher) {
@@ -152,7 +166,7 @@ module.exports = {
         }
 
         // Play streams using ytdl-core
-        const streamOptions = { seek: 0, volume: 0.25 };
+        var streamOptions = { seek: 0, volume: 0.25 };
         if (!msg.guild.streamOptions) {
           msg.guild.streamOptions = streamOptions;
         }
@@ -168,11 +182,11 @@ module.exports = {
           // console.log(typeof err);
           // console.log(err.message);
           if (err.message.match('No video id found')) { //anticipated, now searching youtube with keywords
-            let results = await ytapi.search.list({'part': 'id, snippet', "type": "video", 'q': args.join(' ').toString(), 'maxResults': 1});
-            // let chosenresult = results.items.find(item => {
+            var results = await ytapi.search.list({'part': 'id, snippet', "type": "video", 'q': args.join(' ').toString(), 'maxResults': 1});
+            // var chosenresult = results.items.find(item => {
             //   if (item.id.kind == "youtube#video") return true;
             // });
-            let chosenresult = results.data.items.shift();
+            var chosenresult = results.data.items.shift();
             stream = await ytdl(chosenresult.id.videoId, {filter : 'audioonly'});
             // console.log(results.items);
             // console.log(chosenresult);
@@ -247,16 +261,30 @@ module.exports = {
       }
     },
     // {
+    //   "name":"yttest",
+    //   "description":"",
+    //   "adminOnly": true,
+    //   "run": async function run(client, msg, args, command){
+    //     eval(msg.content.slice(client.prefix.length + command.length + 1));
+    //   }
+    // },
+    // {
     //   "name":"ytsearch",
     //   "description":"",
     //   "adminOnly":true,
     //   "run": async function run(client, msg, args, command) {
-    //     var results = await ytapi.search.list({'part': 'id,snippet', 'q': args.join(' ').toString(), 'maxResults': 2});
-    //     // for(var i in results.items) {
-    //     //   var item = results.items[i];
-    //     //   console.log('[%s] Title: %s' + item.id.videoId + item.snippet.title);
-    //     // }
-    //     console.log(results.data.items);
+    //     try {
+    //       console.log(ytapi.search.list({'part': 'id, snippet', "type": "video", 'q': "boulevard of broken dreams", 'maxResults': 1}));
+    //       // console.log(r);
+    //       // var result = r;
+    //     } catch (e) {
+    //       winston.error(e);
+    //     } finally {
+    //
+    //     }
+    //     // var chosenresult = results.data.items.shift();
+    //     // var stream = await ytdl(chosenresult.id.videoId, {filter : 'audioonly'});
+    //     // console.log(results);
     //
     //   }
     // }

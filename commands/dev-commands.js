@@ -57,7 +57,7 @@ module.exports = {
             `
           }
         }).then((m) => {
-          m.delete(1000*60*5).then(console.log('deleted stats message'));
+          m.delete(1000*60*5).then();
         });//timeout is in milliseconds
       }
     },
