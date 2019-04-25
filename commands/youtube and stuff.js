@@ -39,7 +39,7 @@ var ctremoji = {
   // '🔂':'';
   // '⏸': function (client, msg) {client.commands.get('pause').run(client, msg, []);},
   // '▶':  function (client, msg) {client.commands.get('unpause').run(client, msg, []);},
-  '⏭':function (client, msg) {client.commands.get('skip').run(client, msg, []);},
+  '⏭': function (client, msg) {client.commands.get('skip').run(client, msg, []);},
   '🔁': function (client, msg) {client.commands.get('loop').run(client, msg, []);},
   '🔉': function (client, msg) {client.commands.get('volume').run(client, msg, ['down']);},
   '🔊': function (client, msg) {client.commands.get('volume').run(client, msg, ['up']);},
@@ -67,7 +67,7 @@ function showPlaylist(client, msg, args, forceNewMessage){ //shows and updates
   var now = new Date();
   var message = {
     "embed": {
-      "title":`**${msg.guild.dispatcher.paused?(`⏸Now Pausing`):((msg.guild.loop)? `🔁Now Looping`:`▶Now Playing`)}:**`,
+      "title":`**${msg.guild.dispatcher && msg.guild.dispatcher.paused?(`⏸Now Pausing`):((msg.guild.loop)? `🔁Now Looping`:`▶Now Playing`)}:**`,
       // 'video':{'url': msg.guild.currentlyPlaying.url},
       'thumbnail':{"url":msg.guild.currentlyPlaying.thumbnail||'https://cdn.discordapp.com/embed/avatars/2.png'},
       "color": 2728740,
@@ -89,12 +89,12 @@ function showPlaylist(client, msg, args, forceNewMessage){ //shows and updates
   }
 
   //delete message if nothing is being played, or setting is on for guild
-  var alwaysNewMessage = true;//Will be moved to guild settings... maybe... probably not...
-  if ((playlistmsg && !playlistmsg.deleted && alwaysNewMessage) || (!msg.guild.currentlyPlaying && playlistmsg && !playlistmsg.deleted)) {
-    playlistmsg.delete();
-  }
+  // var alwaysNewMessage = true;//Will be moved to guild settings... maybe... probably not...
+  // if ((playlistmsg && !playlistmsg.deleted && alwaysNewMessage) || (!msg.guild.currentlyPlaying && playlistmsg && !playlistmsg.deleted)) {
+  //   playlistmsg.delete();
+  // }
 
-  if (playlistmsg && !msg.guild.playlistmsg.deleted && playlistmsg.editable && !alwaysNewMessage) {
+  if (playlistmsg && !msg.guild.playlistmsg.deleted && playlistmsg.editable && (forceNewMessage != true)) {
     playlistmsg.edit(message.content, message.embed); //only edit if was already sent and not deleted
   } else {
 
@@ -234,6 +234,7 @@ module.exports = {
           } else {
             // msg.guild.voiceConnection.dispatcher.end(); //should have just happened anyway...
             delete msg.guild.currentlyPlaying;
+            return;
           }
           showPlaylist(client, msg, []);
 
