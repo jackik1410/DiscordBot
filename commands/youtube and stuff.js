@@ -5,7 +5,8 @@ const ytdl = require('ytdl-core');
 const {google} = require('googleapis');
 const ytapi = google.youtube({
   version: 'v3',
-  auth: 'AIzaSyCCbbERdJGtOGk_j4xuESfESAEvcf2d7EM'
+  auth: require('../auth.json').ytapi_auth,
+  // auth: 'AIzaSyCCbbERdJGtOGk_j4xuESfESAEvcf2d7EM'
 });
 
 
@@ -28,7 +29,7 @@ const ytapi = google.youtube({
 //used to control the dispatcher via emotes appended to the queue message
 var ctremoji = {
   '⏯':function (client, msg){
-    if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher) {
+    if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher && msg.guild.voiceChannel == msg.author.voiceChannel) {
       if (msg.guild.voiceConnection.dispatcher.paused) {
         msg.guild.voiceConnection.dispatcher.resume();
       } else {
@@ -111,7 +112,13 @@ function showPlaylist(client, msg, args, forceNewMessage){ //shows and updates
       m.createReactionCollector(filter).on('collect', async r => {
         if (!r.me || r.count <= 1) return;
         // console.log(r);
-        r.remove(r.users.find(u => !u.bot));
+        var user = r.users.find(u => !u.bot);
+        r.remove(user);
+        if (msg.guild.voiceChannel != user.voiceChannel) {
+          msg.channel.send('Not in voiceChannel, not responding to command');
+          return;
+        }
+        msg.author = user;
         ctremoji[r.emoji.name](client, msg);
         showPlaylist(client, msg, [], false);
       });
@@ -206,11 +213,11 @@ module.exports = {
           // var queueobj = {'url':url, 'stream':stream};
           msg.guild.playqueue.push(queueobj);//adding to queue
 
-          showPlaylist(client, msg);
+          showPlaylist(client, msg, true);
         } else { //directly playing
           msg.guild.voiceConnection.playStream(stream, msg.guild.streamOptions);
           msg.guild.currentlyPlaying = queueobj;
-          showPlaylist(client, msg);
+          showPlaylist(client, msg, true);
         }
 
         //stop dispatcher if queue empty, else start next song/video

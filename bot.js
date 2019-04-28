@@ -26,7 +26,7 @@ client.events = new Discord.Collection();
 client.triggers = new Discord.Collection();
 
 //reading and collection the actual files
-function loadCommands(){
+async function loadCommands(){
   fs.readdir("./commands/", (err, files) => {
     if(err) console.log(err);
     let jsfile = files.filter(f => f.split(".").pop() === "js");
@@ -104,7 +104,7 @@ client.on('ready', () => { // tell them when you're ready
 });
 
 client.on('error', (error) => {
-  if (error.match('ECONNRESET')) {
+  if (error.message.match('ECONNRESET')) {
     winston.info('Client suffered ECONNRESET, error caught, carrying on...');
     return;
   }
