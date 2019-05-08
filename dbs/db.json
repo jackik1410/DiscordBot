@@ -42,5 +42,14 @@
         "type": "WATCHING"
       }
     }
+  ],
+  "todolist": [
+    {
+      "author": {
+        "id": "274303955314409472",
+        "name": "jackik"
+      },
+      "content": "add make the rules available via bot commands"
+    }
   ]
 }

@@ -22,6 +22,14 @@
           "274303955314409472",
           "289752534032056320"
         ]
+      },
+      {
+        "name": "removeCleanchat",
+        "author": "274303955314409472",
+        "description": "We don't actually need <@!388818039925243914> anymore, people actually use the <#536305820267184138> channel and i can just set <@557633864735129601> to delete messages if set so... We COULD also remove <@!234395307759108106> as <@557633864735129601> has already assimilated the youtube videoplaying feature. It would make the bots look much cleaner!",
+        "signatures": [
+          "274303955314409472"
+        ]
       }
     ]
   }
