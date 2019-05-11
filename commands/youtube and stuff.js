@@ -28,7 +28,7 @@ const ytapi = google.youtube({
 
 //used to control the dispatcher via emotes appended to the queue message
 var ctremoji = {
-  '⏯':function (client, msg){
+  '⏯': async function (client, msg){
     if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher && msg.guild.voiceChannel == msg.author.voiceChannel) {
       if (msg.guild.voiceConnection.dispatcher.paused) {
         msg.guild.voiceConnection.dispatcher.resume();
@@ -40,19 +40,18 @@ var ctremoji = {
   // '🔂':'';
   // '⏸': function (client, msg) {client.commands.get('pause').run(client, msg, []);},
   // '▶':  function (client, msg) {client.commands.get('unpause').run(client, msg, []);},
-  '⏭': function (client, msg) {client.commands.get('skip').run(client, msg, []);},
-  '🔁': function (client, msg) {client.commands.get('loop').run(client, msg, []);},
-  '🔉': function (client, msg) {client.commands.get('volume').run(client, msg, ['down']);},
-  '🔊': function (client, msg) {client.commands.get('volume').run(client, msg, ['up']);},
-  '⏹': function (client, msg) {client.commands.get('stop').run(client, msg, []);},
+  '⏭': async function (client, msg) {client.commands.get('skip').run(client, msg, []);},
+  '🔁': async function (client, msg) {client.commands.get('loop').run(client, msg, []);},
+  '🔉': async function (client, msg) {client.commands.get('volume').run(client, msg, ['down']);},
+  '🔊': async function (client, msg) {client.commands.get('volume').run(client, msg, ['up']);},
+  '⏹': async function (client, msg) {client.commands.get('stop').run(client, msg, []);},
 };
-
 
 
 function showPlaylist(client, msg, args, forceNewMessage){ //shows and updates
 
   // var playlistmsg = getplaylistmsg(msg);
-  var playlistmsg = msg.guild.playlistmsg;
+  var playlistmsg = msg.guild.playlistmsg || undefined;
   if (msg.guild.playlistmsg) {
     // msg.guild.playlistmsg.then(m => {
     //     playlistmsg = m;
@@ -112,6 +111,7 @@ function showPlaylist(client, msg, args, forceNewMessage){ //shows and updates
       m.createReactionCollector(filter).on('collect', async r => {
         if (!r.me || r.count <= 1) return;
         // console.log(r);
+
         var user = r.users.find(u => !u.bot);
         r.remove(user);
         if (msg.guild.voiceChannel != user.voiceChannel) {
@@ -177,12 +177,15 @@ module.exports = {
         }
 
         // Play streams using ytdl-core
+
         var streamOptions = { seek: 0, volume: 0.25 };
         if (!msg.guild.streamOptions) {
+          streamOptions = { seek: 0, volume: 0.25 };
           msg.guild.streamOptions = streamOptions;
+        } else {
+          streamOptions = msg.guild.streamOptions;
         }
-        var stream = '';
-        var queueobj = {};//not populated here, only defined for higher scope
+        var stream, queueobj; //not populated here, only defined for higher scope
         try {
           stream = ytdl(args[0], { filter : 'audioonly' });
           queueobj = {'name': args[0], 'url': args[0], 'id': 'none, working on it', 'stream':stream};
@@ -234,7 +237,7 @@ module.exports = {
             showPlaylist(client, msg, [], false);
             return;
           }
-
+          
           if (msg.guild.playqueue && msg.guild.playqueue.length >0) {//playing from queue
             msg.guild.currentlyPlaying = msg.guild.playqueue.shift(); //moves object to play from queue
             msg.guild.voiceConnection.playStream(msg.guild.currentlyPlaying.stream, msg.guild.streamOptions);
@@ -243,8 +246,7 @@ module.exports = {
             delete msg.guild.currentlyPlaying;
             return;
           }
-          showPlaylist(client, msg, []);
-
+          showPlaylist(client, msg, [], false);
           //no queue, nothing else
         });
 
@@ -273,6 +275,17 @@ module.exports = {
       "description":"skips the currently playing song",
       "run": async function run(client, msg, args){
         if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher) {
+          if (args[0] && typeof args[0] == 'number' && args[0] >0) {
+            console.log('entered if');
+            var i = args[0] - 1;
+            if (msg.guild.playqueue && msg.guild.playqueue[i]) {
+              msg.guild.playqueue.splice(i, 1);
+              showPlaylist(client, msg, args, false);
+            } else {
+              msg.channel.send(`Couldn't find element ${i+1} in the queue`);
+            }
+            return;
+          }
           msg.guild.voiceConnection.dispatcher.emit('end');
           // showPlaylist(client, msg);//is run when 'end' is emited anyway
         }
@@ -286,6 +299,14 @@ module.exports = {
         // showPlaylist(client, msg, [], false);
       }
     },
+    // {
+    //   "name":"yttest",
+    //   "description":"",
+    //   "adminOnly": true,
+    //   "run": async function run(client, msg, args, command){
+    //     eval(msg.content.slice(client.prefix.length + command.length + 1));
+    //   }
+    // },
     // {
     //   "name":"yttest",
     //   "description":"",

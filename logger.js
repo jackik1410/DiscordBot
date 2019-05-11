@@ -77,6 +77,17 @@ const adapter = new FileSync('./dbs/db.json');
 const db = low(adapter);
 
 
+async function restart(){
+  winston.info('RESTARTING BOT');
+  if (false) {//notify all voiceChannel users with a short message
+    var broadcast = client.createVoiceBroadcast();;
+    await client.voiceConnections.forEach(async (connection) =>{
+      connection.playBroadcast(broadcast);
+    });
+    broadcast.playFile(`Sounds/`);
+  }
+
+  const { spawn } = require('child_process');
 
 async function restart(timeout){
   if (timeout == undefined) {

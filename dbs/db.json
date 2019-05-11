@@ -1,5 +1,44 @@
-{
+{ "rulesmsg": {
+    "embed": {
+      "title": "Rules of the V-WG server",
+      "description": "We hold the right to ban/kick or silence in the case of transgressions against the values of this community. Please practise moderate consideration.",
+      "url": "https://discordapp.com",
+      "color": 14371402,
+      "footer": {
+        "icon_url": "https://cdn.discordapp.com/avatars/557633864735129601/05ffa83e5737c9b1b7ddde24f69aae29.png",
+        "text": "Have Fun!"
+      },
+      "thumbnail": {
+        "url": "https://cdn.discordapp.com/icons/388765646554398734/3c9240dc0185d96d8b042cf26dd9d899.png?"
+      },
+      "author": {
+        "name": "Collective Authority of the V-WG",
+        "url": "https://discordapp.com",
+        "icon_url": "https://cdn.discordapp.com/avatars/557633864735129601/05ffa83e5737c9b1b7ddde24f69aae29.png"
+      },
+      "fields": [
+        {
+          "name": "**RULE 1**",
+          "value": "Only post things in the appropriate channels. Don't post weird things channels not marked as [nsfw], it's what those are for."
+        },
+        {
+          "name": "**RULE 2**",
+          "value": "You may message and annoy Admins, but keep in mind they have the same right, just with more priviliges. Listen to them if they have something important to say!"
+        },
+        {
+          "name": "**RULE 3**",
+          "value": "Have fun! It's required!!! :angry: "
+        }
+      ]
+    }
+  },
   "activities": [
+    {
+      "name": "with bugs",
+      "details": {
+        "type": "PLAYING"
+      }
+    },
     {
       "name": "hard to get",
       "details": {
@@ -41,6 +80,15 @@
       "details": {
         "type": "WATCHING"
       }
+    }
+  ],
+  "todolist": [
+    {
+      "author": {
+        "id": "274303955314409472",
+        "name": "jackik"
+      },
+      "content": "add make the rules available via bot commands"
     }
   ]
 }

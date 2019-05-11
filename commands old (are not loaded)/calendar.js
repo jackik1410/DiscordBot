@@ -93,7 +93,6 @@ function listEvents(auth) {
   });
 }
 
-
 module.exports = {
   'CommandArray':[
     {

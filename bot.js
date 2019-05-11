@@ -103,12 +103,16 @@ client.on('ready', () => { // tell them when you're ready
   client.user.setActivity(`my systems boot up`, {"type": "WATCHING"});
 });
 
-client.on('error', (error) => {
+client.on('error', async (error) => {
   if (error.message.match('ECONNRESET')) {
     winston.info('Client suffered ECONNRESET, error caught, carrying on...');
     return;
   }
   winston.error(error);
+});
+
+client.on('debug', async (error) => {
+  console.log(error);
 });
 
 client.on("guildCreate", guild => {

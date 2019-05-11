@@ -74,7 +74,7 @@ module.exports = {
             var list = [];
             for (var i = 0; i < todolist.length; i++) {
               list.push({
-                "name": `-${i} ` + todolist[i].content,
+                "name": `-${i+1} ` + todolist[i].content,
                 "value":todolist[i].author.name
               });
             }
@@ -100,6 +100,7 @@ module.exports = {
             break;
           default:
             msg.channel.send("I didn't understand that");
+            break;
         }
         // db.set(`todolist`, [{"author":msg.author, "content":msg.content.slice(1+command.length+1)}].concat(db.get(`todolist`).value())).write();
       }
