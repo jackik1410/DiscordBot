@@ -7,3 +7,13 @@ Installation:
     -ffmpeg //for sound handling in any way, used for the bot soundboard, you can just ignore it
   run autorunBot.bat // keeps the bot online, restarts when it crashes; Option to stop at error messages for debugging;
   Profit!
+
+
+
+Features:
+  CLI
+  Youtube search and play
+  Playback control with emotes
+  Database for Data :P
+  Petition system
+  blablabla
