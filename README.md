@@ -5,5 +5,5 @@ Installation:
   install manually:
     -git //for automated updates, it will automatically update if the bot is in a git managed directory.
     -ffmpeg //for sound handling in any way
-  run autorunBot.bat
+  run autorunBot.bat // keeps the bot online, restarts when it crashes; Option to stop at error messages for debugging;
   Profit!
