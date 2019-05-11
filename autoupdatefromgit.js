@@ -10,7 +10,7 @@ async function checkForUpdates(){
   git.pull((err, update) => {
     if(update && update.summary.changes) {
       winston.info('update found, restarting bot');
-      restart();
+      restart(1000);
       // require('child_process').exec('npm restart');
     } else {
       // winston.info('no updates found');
@@ -24,10 +24,11 @@ async function checkForUpdates(){
 
 function initialiseRepo (git) {
   return git.init()
-    .then(() => git.addRemote('origin', 'https://github.com/jackik1410/DiscordBot'))
+    .then(() => git.addRemote('origin', 'https://github.com/jackik1410/DiscordBot')); //edit this if you want it to fetch from somewhere else.
 }
 
 
+//here starts the actuak loop
 if (doUpdate) {
   if(!git.checkIsRepo()){
     initialiseRepo(git).

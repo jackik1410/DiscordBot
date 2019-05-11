@@ -76,12 +76,12 @@ const FileSync = require('lowdb/adapters/FileSync');
 const adapter = new FileSync('./dbs/db.json');
 const db = low(adapter);
 
-async function restart(timeout){
+async function restart(timeout, reason){
   if (timeout == undefined) {
     timeout = 0;
   }
 
-  winston.info('RESTARTING BOT');
+  winston.info('RESTARTING BOT, reason:' + reason);
   if (false) {//notify all voiceChannel users with a short message
     var broadcast = client.createVoiceBroadcast();
     await client.voiceConnections.forEach(async (connection) =>{
@@ -89,7 +89,7 @@ async function restart(timeout){
     });
     broadcast.playFile(`Sounds/`);
   }
-  if (timeout > 0) {
+  if (typeof timeout == 'number' && timeout > 0) {
   await setTimeout(function(){}, timeout).then();
   }
 
