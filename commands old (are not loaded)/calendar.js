@@ -92,3 +92,18 @@ function listEvents(auth) {
     }
   });
 }
+
+module.exports = {
+  'CommandArray':[
+    {
+      'name':'timeout',
+      'description':'',
+      'MemberOnly': true,
+      'run': async function run(client, msg, args, command){
+        if (args[0] && typeof args[0]=='number') {
+          setTimeout(function(){}, args[0]*1000);
+        }
+      }
+    },
+  ]
+}

@@ -15,7 +15,11 @@ module.exports = {
       "description":"restarts the bot",
       "adminOnly": true,
       "run": async function run(client, msg, args){
-        restart();
+        if (args[0] && typeof args[0]== 'number') {
+          setTimeout(restart(), number);
+        } else {
+          restart();
+        }
       }
     },
     { //oldrestart no longer used

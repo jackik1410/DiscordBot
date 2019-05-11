@@ -5,7 +5,8 @@ const ytdl = require('ytdl-core');
 const {google} = require('googleapis');
 const ytapi = google.youtube({
   version: 'v3',
-  auth: 'AIzaSyCCbbERdJGtOGk_j4xuESfESAEvcf2d7EM'
+  auth: require('../auth.json').ytapi_auth,
+  // auth: 'AIzaSyCCbbERdJGtOGk_j4xuESfESAEvcf2d7EM'
 });
 
 
@@ -27,8 +28,8 @@ const ytapi = google.youtube({
 
 //used to control the dispatcher via emotes appended to the queue message
 var ctremoji = {
-  '⏯':function (client, msg){
-    if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher) {
+  '⏯': async function (client, msg){
+    if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher && msg.guild.voiceChannel == msg.author.voiceChannel) {
       if (msg.guild.voiceConnection.dispatcher.paused) {
         msg.guild.voiceConnection.dispatcher.resume();
       } else {
@@ -36,16 +37,15 @@ var ctremoji = {
       }
     }
   },
-  // '🔁':client.commands.get('loop').run(client, msg, []),
   // '🔂':'';
-  '⏸': function (client, msg) {client.commands.get('pause').run(client, msg, []);},
-  '▶':  function (client, msg) {client.commands.get('unpause').run(client, msg, []);},
-  '⏭':function (client, msg) {client.commands.get('skip').run(client, msg, []);},
-  '🔉': function (client, msg) {client.commands.get('volume').run(client, msg, ['down']);},
-  '🔊': function (client, msg) {client.commands.get('volume').run(client, msg, ['up']);},
-  '⏹': function (client, msg) {client.commands.get('stop').run(client, msg, []);},
+  // '⏸': function (client, msg) {client.commands.get('pause').run(client, msg, []);},
+  // '▶':  function (client, msg) {client.commands.get('unpause').run(client, msg, []);},
+  '⏭': async function (client, msg) {client.commands.get('skip').run(client, msg, []);},
+  '🔁': async function (client, msg) {client.commands.get('loop').run(client, msg, []);},
+  '🔉': async function (client, msg) {client.commands.get('volume').run(client, msg, ['down']);},
+  '🔊': async function (client, msg) {client.commands.get('volume').run(client, msg, ['up']);},
+  '⏹': async function (client, msg) {client.commands.get('stop').run(client, msg, []);},
 };
-
 
 
 function showPlaylist(client, msg, args, forceNewMessage){ //shows and updates
@@ -58,22 +58,22 @@ function showPlaylist(client, msg, args, forceNewMessage){ //shows and updates
     // });
     //  // playlistmsg = msg.guild.playlistmsg;
 
-    if (!msg.guild.currentlyPlaying) {
-      playlistmsg.delete();
-      return; //exits if nothing left todo
-    }
+  }
+  if (!msg.guild.currentlyPlaying) {
+    playlistmsg.delete();
+    return; //exits if nothing left todo
   }
 
   var now = new Date();
   var message = {
     "embed": {
-      "title":"**Now Playing:**",
+      "title":`**${msg.guild.dispatcher && msg.guild.dispatcher.paused?(`⏸Now Pausing`):((msg.guild.loop)? `🔁Now Looping`:`▶Now Playing`)}:**`,
       // 'video':{'url': msg.guild.currentlyPlaying.url},
       'thumbnail':{"url":msg.guild.currentlyPlaying.thumbnail||'https://cdn.discordapp.com/embed/avatars/2.png'},
       "color": 2728740,
       'timestamp': now.toJSON(),
       "author":{'name': msg.guild.me.nickname},
-      "description":`[${msg.guild.currentlyPlaying.name}](${msg.guild.currentlyPlaying.url})`
+      "description":`[${msg.guild.currentlyPlaying.name}](${msg.guild.currentlyPlaying.url})`,
     }
   };
   if (msg.guild.voiceConnection.dispatcher.paused) message.title += '__(paused)__';
@@ -89,12 +89,12 @@ function showPlaylist(client, msg, args, forceNewMessage){ //shows and updates
   }
 
   //delete message if nothing is being played, or setting is on for guild
-  var alwaysNewMessage = true;//Will be moved to guild settings... maybe... probably not...
-  if ((playlistmsg && !playlistmsg.deleted && alwaysNewMessage) || (!msg.guild.currentlyPlaying && playlistmsg && !playlistmsg.deleted)) {
-    playlistmsg.delete();
-  }
+  // var alwaysNewMessage = true;//Will be moved to guild settings... maybe... probably not...
+  // if ((playlistmsg && !playlistmsg.deleted && alwaysNewMessage) || (!msg.guild.currentlyPlaying && playlistmsg && !playlistmsg.deleted)) {
+  //   playlistmsg.delete();
+  // }
 
-  if (playlistmsg && !msg.guild.playlistmsg.deleted && playlistmsg.editable && !alwaysNewMessage) {
+  if (playlistmsg && !msg.guild.playlistmsg.deleted && playlistmsg.editable && (forceNewMessage != true)) {
     playlistmsg.edit(message.content, message.embed); //only edit if was already sent and not deleted
   } else {
 
@@ -103,7 +103,7 @@ function showPlaylist(client, msg, args, forceNewMessage){ //shows and updates
 
       //TODO add reaction emojis so that pausing, unpausing and skipping cost only a single click
       Object.keys(ctremoji).forEach(async (emote) => {
-        m.react(emote);
+        await m.react(emote);
       });
 
       // new Discord.ReactionCollector(messagefilteroptions);
@@ -111,8 +111,16 @@ function showPlaylist(client, msg, args, forceNewMessage){ //shows and updates
       m.createReactionCollector(filter).on('collect', async r => {
         if (!r.me || r.count <= 1) return;
         // console.log(r);
-        r.remove(r.users.find(u => !u.bot));
+
+        var user = r.users.find(u => !u.bot);
+        r.remove(user);
+        if (msg.guild.voiceChannel != user.voiceChannel) {
+          msg.channel.send('Not in voiceChannel, not responding to command');
+          return;
+        }
+        msg.author = user;
         ctremoji[r.emoji.name](client, msg);
+        showPlaylist(client, msg, [], false);
       });
 
 
@@ -156,6 +164,9 @@ module.exports = {
       "name": "play",
       "description": "Provided with either keywords or url, plays audio stream over voiceChannel",
       "run": async function run(client, msg, args){
+        if (!msg.guild.playqueue) {
+          msg.guild.playqueue = [];
+        }
         if ( !msg.member.voiceChannel || !msg.guild.voiceConnection || msg.member.voiceChannel.id != msg.guild.voiceConnection.channel.id) {
           msg.reply('you can only do that if you are in the same voiceChannel as the bot');
           return;
@@ -166,7 +177,8 @@ module.exports = {
         }
 
         // Play streams using ytdl-core
-        var streamOptions;
+
+        var streamOptions = { seek: 0, volume: 0.25 };
         if (!msg.guild.streamOptions) {
           streamOptions = { seek: 0, volume: 0.25 };
           msg.guild.streamOptions = streamOptions;
@@ -202,32 +214,37 @@ module.exports = {
         //checking queue, creating it if necessary
         if (msg.guild.voiceConnection.dispatcher) {//queuing
           // var queueobj = {'url':url, 'stream':stream};
-          if (!msg.guild.playqueue) { //creating queue
-            msg.guild.playqueue = [queueobj];
-          } else { //adding to queue
-            msg.guild.playqueue.push(queueobj);
-          }
-          showPlaylist(client, msg);
+          msg.guild.playqueue.push(queueobj);//adding to queue
+
+          showPlaylist(client, msg, true);
         } else { //directly playing
           msg.guild.voiceConnection.playStream(stream, msg.guild.streamOptions);
           msg.guild.currentlyPlaying = queueobj;
-          showPlaylist(client, msg);
+          showPlaylist(client, msg, true);
         }
 
         //stop dispatcher if queue empty, else start next song/video
         // msg.guild.voiceConnection.dispatcher.stream.on('end', (reason) => {
         //   // msg.guild.voiceConnection.dispatcher.end();
         // });
-
-
         msg.guild.voiceConnection.dispatcher.on('end', (reason) => {
           // console.log(reason);
+          if (msg.guild.loop == true) {
+            msg.guild.playqueue.push(msg.guild.currentlyPlaying);
+            msg.guild.currentlyPlaying = msg.guild.playqueue.shift();
+
+            msg.guild.voiceConnection.playStream(msg.guild.currentlyPlaying.stream, msg.guild.streamOptions);
+            showPlaylist(client, msg, [], false);
+            return;
+          }
+          
           if (msg.guild.playqueue && msg.guild.playqueue.length >0) {//playing from queue
             msg.guild.currentlyPlaying = msg.guild.playqueue.shift(); //moves object to play from queue
             msg.guild.voiceConnection.playStream(msg.guild.currentlyPlaying.stream, msg.guild.streamOptions);
           } else {
             // msg.guild.voiceConnection.dispatcher.end(); //should have just happened anyway...
             delete msg.guild.currentlyPlaying;
+            return;
           }
           showPlaylist(client, msg, [], false);
           //no queue, nothing else
@@ -274,6 +291,22 @@ module.exports = {
         }
       }
     },
+    {
+      "name":"loop",
+      "description":"Toggles looping the queue",
+      "run": async function run(client, msg, args){
+        msg.guild.loop = !msg.guild.loop || true;
+        // showPlaylist(client, msg, [], false);
+      }
+    },
+    // {
+    //   "name":"yttest",
+    //   "description":"",
+    //   "adminOnly": true,
+    //   "run": async function run(client, msg, args, command){
+    //     eval(msg.content.slice(client.prefix.length + command.length + 1));
+    //   }
+    // },
     // {
     //   "name":"yttest",
     //   "description":"",
