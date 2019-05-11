@@ -12,6 +12,7 @@ Installation:
 
 Features:
   CLI
+  multiple commands per file for easy adding and editing
   Youtube search and play
   Playback control with emotes
   Database for Data :P
