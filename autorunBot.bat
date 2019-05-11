@@ -7,7 +7,7 @@ cls
 :loop
 cls
 call node bot.js
-if %ERRORLEVEL% NEQ 0 ( ::pauses if didn't exit smoothly, recommended only if bot not on a remote machiene
+if %ERRORLEVEL% NEQ 0 ( ::pauses if didn't exit smoothly, recommended only if bot not on a remote machine
   pause
 )
 
