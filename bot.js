@@ -5,17 +5,17 @@ const fs = require("fs");
 const db = require(`./logger.js`).db; //database, for storing and and retreiving data
 const winston = require(`./logger.js`).winston; //provides logger functionality
 
-require('./autoupdatefromgit.js'); //automatically checks for updates and updates the bot if found
+require('./autoupdatefromgit.js'); //automatically checks for updates and updates the bot if found, comment out if not wanted
 
 var auth = require('./auth.json'); // contains the authentication token for the bot
 const client = new Discord.Client({
-   token: auth.token, //can be manually edited here aswell
+   token: auth.token, //can be manually edited here aswell to token: 'YouRTokenHeRe',
    autorun: true
 });
 client.login(auth.token);//needed
 
-process.title = `running V-WG Bot`;
-client.prefix = "!";
+process.title = `running V-WG Bot`;//only you can see this
+client.prefix = "!"; // just change the prefix here
 
 
 //file handler for commands
@@ -94,9 +94,9 @@ function resetCommands(){
 }
 loadCommands(); //ACTUALLY loading commands
 
-client.on('ready', () => { // tell them when you're ready
+client.on('ready', async () => { // tell them when you're ready
   module.exports = {"client": client, "resetcommands": resetCommands};
-  const consoleinput = require('./consoleinput');
+  const consoleinput = await require('./consoleinput');
 
   console.log("\n\n\n\nREADY - CLI initialized");
   winston.info(`Reconnected as ${client.user.username} - (${client.user.id})`);
@@ -110,20 +110,21 @@ client.on('error', async (error) => {
   }
   winston.error(error);
 });
-
 client.on('debug', async (error) => {
-  console.log(error);
+  // console.log(error);
+  winston.debug('client ' + error);
 });
+
 
 client.on("guildCreate", guild => {
   // This event triggers when the bot joins a guild.
   winston.info(`New guild joined: ${guild.name} (id: ${guild.id}). This guild has ${guild.memberCount} members!`);
 });
-
 client.on("guildDelete", guild => {
   // this event triggers when the bot is removed from a guild.
   winston.info(`I have been removed from: ${guild.name} (id: ${guild.id})`);
 });
+
 
 client.on('message', async msg => {
 

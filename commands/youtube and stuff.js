@@ -95,7 +95,7 @@ function showPlaylist(client, msg, args, forceNewMessage){ //shows and updates
   // }
 
   if (playlistmsg && !msg.guild.playlistmsg.deleted && playlistmsg.editable && (forceNewMessage != true)) {
-    playlistmsg.edit(message.content, message.embed); //only edit if was already sent and not deleted
+    playlistmsg.edit(message); //only edit if was already sent and not deleted
   } else {
 
     msg.channel.send(message).then(async (m) => {
@@ -155,6 +155,7 @@ function resumePause(msg){
     } else {
       msg.guild.dispatcher.pause();
     }
+    // showPlaylist(client, msg, [], false);
   }
 }
 
@@ -227,6 +228,11 @@ module.exports = {
         // msg.guild.voiceConnection.dispatcher.stream.on('end', (reason) => {
         //   // msg.guild.voiceConnection.dispatcher.end();
         // });
+
+        // msg.guild.voiceConnection.dispatcher.on('speaking', () => {
+        //     showPlaylist(client, msg, [], false);
+        //   }
+        // );
         msg.guild.voiceConnection.dispatcher.on('end', (reason) => {
           // console.log(reason);
           if (msg.guild.loop == true) {
@@ -237,7 +243,7 @@ module.exports = {
             showPlaylist(client, msg, [], false);
             return;
           }
-          
+
           if (msg.guild.playqueue && msg.guild.playqueue.length >0) {//playing from queue
             msg.guild.currentlyPlaying = msg.guild.playqueue.shift(); //moves object to play from queue
             msg.guild.voiceConnection.playStream(msg.guild.currentlyPlaying.stream, msg.guild.streamOptions);
@@ -295,7 +301,7 @@ module.exports = {
       "name":"loop",
       "description":"Toggles looping the queue",
       "run": async function run(client, msg, args){
-        msg.guild.loop = !msg.guild.loop || true;
+        msg.guild.loop = (msg.guild.loop)?!msg.guild.loop:true;
         // showPlaylist(client, msg, [], false);
       }
     },

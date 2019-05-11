@@ -7,10 +7,11 @@ var doUpdate = true; //weither or not it automatically updates from git repo.
 git.pull().tags((err, tags) => console.log("Latest available tag: %s", tags.latest));
 
 async function checkForUpdates(){
-  git.pull((err, update) => {
+  git.pull(async (err, update) => {
     if(update && update.summary.changes) {
-      winston.info('update found, restarting bot');
-      restart(1000);
+      await winston.info('update found, restarting bot');
+      await winston.debug(update.summary.changes);
+      restart('Updating from GIT', 10);
       // require('child_process').exec('npm restart');
     } else {
       // winston.info('no updates found');

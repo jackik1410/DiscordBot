@@ -76,12 +76,16 @@ const FileSync = require('lowdb/adapters/FileSync');
 const adapter = new FileSync('./dbs/db.json');
 const db = low(adapter);
 
-async function restart(timeout, reason){
-  if (timeout == undefined) {
+async function restart(reason, timeout){
+  if (client.rebooting != undefined) {
+    winston.info(`a restart is already scheduled`);
+    return false;
+  }
+  if (timeout == undefined || typeof timeout != 'number') {
     timeout = 0;
   }
 
-  winston.info('RESTARTING BOT, reason:' + reason);
+  winston.info(`RESTARTING BOT${(timeout ==0)?'':` in ${timeout}`}, reason:` + (reason != undefined)?reason:'no reason given');
   if (false) {//notify all voiceChannel users with a short message
     var broadcast = client.createVoiceBroadcast();
     await client.voiceConnections.forEach(async (connection) =>{
@@ -89,10 +93,17 @@ async function restart(timeout, reason){
     });
     broadcast.playFile(`Sounds/`);
   }
-  if (typeof timeout == 'number' && timeout > 0) {
-  await setTimeout(function(){}, timeout).then();
+  if (timeout > 0) {
+    client.rebooting = {
+      'timer':setTimeout(rebootBot(), timeout*1000),
+      'reason': reason};
+  } else {
+    rebootBot();
   }
+  return true;
+}
 
+function rebootBot(){
   const { spawn } = require('child_process');
   const subprocess = spawn(process.argv[0], [`../bot.js`], {
     detached: true,

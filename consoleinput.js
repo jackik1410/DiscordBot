@@ -54,7 +54,7 @@ rl.on('line', (line) => {
       case 'clieval':
           eval(line.trim().slice(command.length +1));
         break;
-      case 'test':
+      case 'commands':
         console.log(client.commands);
         break;
       case 'hello':
@@ -73,6 +73,7 @@ rl.on('line', (line) => {
             console.log('This command was intentionally deactivated for the CLI');
             return;
           }
+          winston.info(`running ${ListedCommand.name} from CLI`);
           ListedCommand.run(client, msg, args, command, db).catch(err => winston.error(err));
         }
         break;
