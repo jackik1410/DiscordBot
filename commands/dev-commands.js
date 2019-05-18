@@ -44,6 +44,15 @@ module.exports = {
         }
       }
     },
+    {
+      "name":"commandreload",
+      "aliases":["reloadcommands","resetcommands","commandsrest"],
+      "description":"reloads all commands (slightly faster than restarting)",
+      "adminOnly": true,
+      "run": async function run(){
+        require('./bot.js').resetcommands();
+      }
+    },
     { // bot stats             shows embeded message with some stats of the bot
       "name":"bot",
       "aliases":['botinfo', 'generalinfo', 'botstats', 'stats'],
@@ -54,10 +63,11 @@ module.exports = {
             "title": client.user.username + " stats:",
             "description":`Bot is used on **${client.guilds.array().length}** Servers
             Currently connected to **${client.voiceConnections.array().length}** Voice Channels
+            Has a total of **${client.commands.length}** loaded
             `
           }
         }).then((m) => {
-          m.delete(1000*60*5).then();
+          m.delete(1000*60*5).then(); // 5min
         });//timeout is in milliseconds
       }
     },

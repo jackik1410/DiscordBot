@@ -29,8 +29,8 @@ async function loadCommands(){
   client.triggers = new Discord.Collection();
 
   var commandsloaded = 0; //for show and debugging purposes
-  fs.readdir("./commands/", (err, files) => {
-    if(err) console.log(err);
+  await fs.readdir("./commands/", (err, files) => {
+    if(err) winston.log(err);
     let jsfile = files.filter(f => f.split(".").pop() === "js");
     if(jsfile.length <= 0){
       console.log("Commands Folder empy, no commands found");
@@ -49,13 +49,12 @@ async function loadCommands(){
           client.commands.set(element.name, element);
           console.log(`      - ${element.name}`);
           if (element.aliases) {
-            console.log(`          aliases:`);
             let aliases = "";//aliases directly refer to the command object
             element.aliases.forEach(alias => {
               client.aliases.set(alias, element.name);
               aliases += ", " + alias;
             });
-            console.log(`             ${aliases.slice(2)}`);
+            console.log(`          aliases: ${aliases.slice(2)}`);
           }
           commandsloaded += 1;
         });
@@ -64,13 +63,12 @@ async function loadCommands(){
         client.commands.set(commandfile.name, commandfile);
         console.log(`   installed - ${commandfile.name}`);
         if (commandfile.aliases) {
-          console.log(`          aliases:`);
           var aliases = "";//aliases directly refer to the commandfile
           commandfile.aliases.forEach(alias => {
             client.aliases.set(alias, commandfile.name);
             aliases += ", " + alias ;
           });
-          console.log(`             ${aliases.slice(2)}`);
+          console.log(`          aliases: ${aliases.slice(2)}`);
         }
         commandsloaded += 1;
       }
@@ -89,14 +87,14 @@ async function loadCommands(){
             winston.warn(`${event.name} has looptime = ${event.looptime}, setting it to 60000ms for now;`);
             event.looptime = 60000;
           }
-          console.log(`starting ${event.name} event loop every ${event.looptime}ms`);
+          console.log(`        starting ${event.name} event loop every ${event.looptime}ms`);
           event.runtime = setInterval(event.run, event.looptime, client); //.catch(err => winston.error(err))
           //commandsloaded += 1; //these are events, not commands... unsure if i should include them
         });
       }
     });
+    winston.info(`successfully loaded ${commandsloaded} commands`);
   });
-  winston.info(`successfully loaded ${commandsloaded} commands`);
 }
 function resetCommands(){
   winston.info('reloading all bot commands');

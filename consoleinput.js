@@ -27,7 +27,7 @@ var ConsoleCommands = { // commands defined just for CLI usage, primarily for de
 
 // stuff needed to pretent messages came via Discord to use those commands aswell(where possible)
 async function SendMsg(msg){
-  console.log(msg);
+  console.log("response: " + msg);
   return;
 };
 //msg.member.roles
