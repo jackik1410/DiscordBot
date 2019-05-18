@@ -36,5 +36,5 @@ if (doUpdate) {
     git.fetch();
   }
 
-  setInterval(checkForUpdates, 60000);// 60000 = 1min
+  setInterval(checkForUpdates, 1 * 60 * 1000);// 60000 = 1min
 }

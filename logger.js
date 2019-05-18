@@ -102,6 +102,15 @@ async function restart(reason, timeout){
   }
   return true;
 }
+function abortRestart(){
+  if (client.rebooting.timer != undefined) {
+    clearTimeout(client.rebooting.timer);
+    delete client.rebooting;
+    winston.info('scheduled restart aborted');
+  } else {
+    winston.info('No restart scheduled, nothing happened');
+  }
+}
 
 function rebootBot(){
   const { spawn } = require('child_process');
@@ -124,7 +133,8 @@ function rebootBot(){
 }
 
 module.exports = {
-  "winston":winston,
-  "db":db,
-  "restart":restart
+  "winston": winston,
+  "db": db,
+  "restart": restart,
+  "abortrestart": abortRestart,
 };

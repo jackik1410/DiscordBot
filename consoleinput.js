@@ -1,27 +1,31 @@
-// const rl = require('readline-async');
-// console.log(rl);
-
-// rl.addCommands();
-// rl.onLine(function (line) {
-//   console.log(`received input was: '${line}'`);
-//   // eval(line);
-// })
-
-// module.exports = async function (client){
-//   while (true) {
-//     await rl.question(' ', (input) => {
-//       eval(input);
-//       rl.close();
-//     });
-//   }
-// };
-
-
 const db = require(`./logger.js`).db;
 const winston = require('./logger.js').winston;
 var client = require('./bot.js').client;
 
-// stuff needed to pretent messages came via Discord
+var ConsoleCommands = { // commands defined just for CLI usage, primarily for debug and development
+  "test": function (){
+      console.log('works...\n fine!');
+    },
+  "eval": function (line, command){
+      eval(line.trim().slice(command.length +1));
+    },
+  "commands": function (){
+      console.log(client.commands);
+    },
+  "commandreload": require('./bot.js').resetcommands,
+  "": function (){
+
+    },
+  "": function (){
+
+    },
+  "": function (){
+
+    },
+}
+
+
+// stuff needed to pretent messages came via Discord to use those commands aswell(where possible)
 async function SendMsg(msg){
   console.log(msg);
   return;
@@ -47,37 +51,30 @@ const rl = readline.createInterface({
 });
 rl.on('line', (line) => {
   try {
-    msg.content = "!" + line.trim();//update
+    winston.silly(`CLI input: "${line}"`); // just in case something breaks, will be loged in the files
     var args = line.trim().split(/ +/g);
     var command = args.shift().toLowerCase();
-    switch (command) {
-      case 'clieval':
-          eval(line.trim().slice(command.length +1));
-        break;
-      case 'commands':
-        console.log(client.commands);
-        break;
-      case 'hello':
-        console.log('world! I WORK!');
-        break;
-      default:
-        //commandhandler
-        let ListedCommand = client.commands.get(command) || client.commands.get(client.aliases.get(command)) || client.aliases.get(command);
-        if (ListedCommand) {
-          if (!ListedCommand.run) {
-            console.log(ListedCommand);
-            console.log("command couldn't be run, run() not defined");
-            return;
-          }
-          if (ListedCommand.cli == false) {
-            console.log('This command was intentionally deactivated for the CLI');
-            return;
-          }
-          winston.info(`running ${ListedCommand.name} from CLI`);
-          ListedCommand.run(client, msg, args, command, db).catch(err => winston.error(err));
+    if (ConsoleCommands[command] != null) {
+      ConsoleCommands[command](line, command, args);
+    } else {
+      // standart commandhandler
+      msg.content = client.prefix + line.trim(); //update
+      let ListedCommand = client.commands.get(command) || client.commands.get(client.aliases.get(command)) || client.aliases.get(command);
+      if (ListedCommand) {
+        if (!ListedCommand.run) {
+          console.log(ListedCommand);
+          console.log("command couldn't be run, run() not defined");
+          return;
         }
-        break;
+        if (ListedCommand.cli == false) {
+          console.log('This command was intentionally deactivated for the CLI');
+          return;
+        }
+        winston.info(`running ${ListedCommand.name} from CLI`);
+        ListedCommand.run(client, msg, args, command, db).catch(err => winston.error(err));
+      }
     }
+
   } catch (err) {
     winston.error(err);
   } finally {

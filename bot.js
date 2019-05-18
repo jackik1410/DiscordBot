@@ -18,15 +18,17 @@ process.title = `running V-WG Bot`;//only you can see this
 client.prefix = "!"; // just change the prefix here
 
 
-//file handler for commands
-client.commands = new Discord.Collection();
-client.aliases = new Discord.Collection();//refering to client.commands
-
-client.events = new Discord.Collection();
-client.triggers = new Discord.Collection();
-
-//reading and collection the actual files
+//reading files and collecting the commands
 async function loadCommands(){
+
+  //preparing collections for commands (this is how they are accessible later)
+  client.commands = new Discord.Collection();
+  client.aliases = new Discord.Collection();//refering to client.commands
+
+  client.events = new Discord.Collection();
+  client.triggers = new Discord.Collection();
+
+  var commandsloaded = 0; //for show and debugging purposes
   fs.readdir("./commands/", (err, files) => {
     if(err) console.log(err);
     let jsfile = files.filter(f => f.split(".").pop() === "js");
@@ -55,6 +57,7 @@ async function loadCommands(){
             });
             console.log(`             ${aliases.slice(2)}`);
           }
+          commandsloaded += 1;
         });
       }
       if (commandfile.name) {
@@ -69,26 +72,34 @@ async function loadCommands(){
           });
           console.log(`             ${aliases.slice(2)}`);
         }
+        commandsloaded += 1;
+      }
+
+      if (commandfile.triggers) {
+        //still thinking about the structure here...
       }
 
       if (commandfile.events) { //loading Events
         commandfile.events.forEach(async (event) => {
+          if (!event.run || (event.active==false)) {
+            winston.warn(`${event.name} has no defined run function or was deactivated`);
+            return;
+          }
           if(! event.looptime || event.looptime < 50) {
             winston.warn(`${event.name} has looptime = ${event.looptime}, setting it to 60000ms for now;`);
             event.looptime = 60000;
           }
-          if (!event.run || (event.active==false)) {
-            winston.error(`${event.name} has no defined run function or was deactivated`);
-            return;
-          }
           console.log(`starting ${event.name} event loop every ${event.looptime}ms`);
           event.runtime = setInterval(event.run, event.looptime, client); //.catch(err => winston.error(err))
+          //commandsloaded += 1; //these are events, not commands... unsure if i should include them
         });
       }
     });
   });
+  winston.info(`successfully loaded ${commandsloaded} commands`);
 }
 function resetCommands(){
+  winston.info('reloading all bot commands');
   delete client.commands, client.aliases, client.triggers, client.events;
   loadCommands();
 }
