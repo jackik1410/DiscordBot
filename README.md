@@ -11,7 +11,7 @@ Installation:
 
 
 Features:
-  CLI -  easy acces to all normal + additional commands
+  CLI -  easy access to all normal + additional commands
   multiple commands per file for easy adding and editing
   Youtube search and play
   Playback control with emotes
