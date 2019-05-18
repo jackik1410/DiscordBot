@@ -148,12 +148,8 @@ client.on('message', async msg => {
         });
       });
     }
-    if (msg.author.id == '289752534032056320' || msg.author.username=="Yuri") {
-      msg.react('525995512172904451');
-      msg.react('🦍');
-    }
-    if (['yuri', 'moritz', 'kaesekuchen', 'käsekuchen'].some(triggerword => {if (msg.content.toLowerCase().match(triggerword)) return true;}) || msg.isMentioned('289752534032056320')) {
-      msg.react('525995512172904451');
+    if (msg.author.id == '289752534032056320' || msg.author.username=="Yuri" || ['yuri', 'moritz', 'kaesekuchen', 'käsekuchen'].some(triggerword => {if (msg.content.toLowerCase().match(triggerword)) return true;}) || msg.isMentioned('289752534032056320')) {
+      msg.react('579336050153881601');
 
     }
     if (msg.content.toLowerCase().match('wtf')) {
