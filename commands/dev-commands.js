@@ -79,29 +79,31 @@ module.exports = {
         var todolist = await db.get('todolist').value() || [];
         // console.log(todolist);
         switch (args[0]) {
-          case 'show'://fall-through
+          case 'show'://fall-through, but posted public
+            var showpublic = true;
           case 'list':
+            var showpublic = false;
             var list = [];
             for (var i = 0; i < todolist.length; i++) {
               list.push({
-                "name": `-${i+1} ` + todolist[i].content,
+                "name": `-[${i+1}] ` + todolist[i].content,
                 "value":todolist[i].author.name
               });
             }
 
-            // await todolist.forEach(elem => {
-            //   list.push({
-            //     "name":elem.content,
-            //     "value":elem.author.name
-            //   });
-            // });
-            msg.author.send({
+            var message = await {
               "embed":{
-                "title":"TODOLIST:",
-                "description":"",
-                "fields":list
+                "title": "Bot TODOLIST:",
+                "description": "",
+                "fields": list
               }
-            });
+            };
+            if (true) {
+              msg.channel.send(message);
+            } else {
+              msg.author.send(message);
+              msg.reply(`you were sent a DM with all todolist items.`);
+            }
             break;
           case 'add':
             await todolist.push({"author":{"id":msg.author.id, "name":msg.author.username}, "content":msg.content.slice(client.prefix.length+command.length+1)});

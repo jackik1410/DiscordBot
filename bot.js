@@ -135,6 +135,19 @@ client.on("guildDelete", guild => {
 });
 
 
+
+
+
+
+
+
+
+
+
+
+
+
+
 client.on('message', async msg => {
 
   if (msg.author.bot) return; //would react to own messages otherwise
@@ -149,11 +162,15 @@ client.on('message', async msg => {
       });
     }
     if (msg.author.id == '289752534032056320' || msg.author.username=="Yuri" || ['yuri', 'moritz', 'kaesekuchen', 'käsekuchen'].some(triggerword => {if (msg.content.toLowerCase().match(triggerword)) return true;}) || msg.isMentioned('289752534032056320')) {
-      msg.react('579336050153881601');
+      // msg.react('579336050153881601');//old
+      msg.react('579357609203728394');//new
 
     }
+    if (msg.content.toLowerCase().match('discord')) {
+      msg.react('579419800837685298');
+    }
     if (msg.content.toLowerCase().match('wtf')) {
-      msg.react('557192347704754216');
+      // msg.react('557192347704754216');
     }
     if (msg.content.toLowerCase().match("bomb")) {
       msg.react('🍍');
@@ -162,7 +179,7 @@ client.on('message', async msg => {
       msg.react('🖕');
     }
     if (msg.content.toLowerCase().match("gewitter")) {
-      msg.react("525993358154530817");
+      // msg.react("525993358154530817");
       msg.reply("GEWITTER?!");
     }
   }

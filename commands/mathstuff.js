@@ -1,8 +1,23 @@
+var calc = { // array of handled operations
+  "+": function(){},
+  "-": function(){},
+  "*": function(){},
+  "/": function(){},
+};
 
+async function math(){
 
+}
 
 module.exports = {
   "CommandArray": [
+    {
+      "name":"dmath",
+      "description":"",
+      "run": async function run(client, msg, args, command){
+
+      }
+    },
     {
       "name":"math",
       "description":"does math-y stuff",
