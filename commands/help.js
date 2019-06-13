@@ -25,12 +25,16 @@ module.exports = {
     var helpmessage = "";
     var generalcommands = "";
     var membercommands = "";
-    var admincommands = "";
+    var admincommands = [];
 
     await client.commands.forEach(element =>{
       if (element.adminOnly && element.adminOnly == true) {
         if (OPs.admins.includes(msg.author.id)) {//don't bother doing if not going to be shown
-          admincommands += `\n"${element.name}": ${element.description}`;
+          // admincommands += `\n"${element.name}": ${element.description}`;
+          admincommands.push({"name":element.name || "unnamed",
+          "value":element.description || "no description",
+          // "inline":true
+        });
         }
       } else if (element.MemberOnly && element.MemberOnly == true) {
         if ( msg.channel.type != 'dm' && msg.member.roles.some(r => ["Moderator", "Mitbewohner", "Admin", "el jefe"].includes(r.name))) {//don't bother doing if not going to be shown
@@ -45,10 +49,15 @@ module.exports = {
     if ( msg.channel.type != 'dm' && msg.member.roles.find(r => r.name == "Mitbewohner")) {
       membercommands = "\nMember Commands: ```javascript\n" + membercommands+"```";
     }
-    if (OPs.admins.includes(msg.author.id)) {
-      admincommands =  "\nAdmincommands: ```javascript\n" + admincommands+"```";
-    }
-    helpmessage = "Available Commands: ```javascript\n" + generalcommands + "```" + membercommands + admincommands;
+    helpmessage = "Available Commands: ```javascript\n" + generalcommands + "```" + membercommands;
     msg.channel.send(helpmessage);
+    if (OPs.admins.includes(msg.author.id)) {
+      // admincommands =  "\nAdmincommands: ```javascript\n" + admincommands+"```";
+      msg.channel.send({"embed":{
+        "title":"Admin Commands",
+        // "":"",
+        "fields": admincommands,
+      }});
+    }
   }
 }

@@ -136,40 +136,71 @@ module.exports = {
     {//sound OLD much TODO here
       "name":"sound",
       "description": "still not entirely implemented",
-      "MemberOnly": true,
+      "adminOnly": true,
       "run": async function run(client, msg, args, command) {
         switch (args[0]) {//args[0]
           case 'test':
-            msg.channel.send(await fs.readdir('./Sounds/'));
+            await fs.readdir('./Sounds/', (err, files)=> {msg.channel.send(files);});
             return;
+
+          case 'list':
+            try {
+              var originalDir = "./Sounds/";
+              var soundsList= "";
+              function searchDir(dir){
+                fs.readdir(dir, {"withFileTypes":true}, (err, files) => {
+                  console.log(files);
+                  console.log(typeof files);
+                  Object.keys(files).forEach(o => {
+                    if (files[o].isDirectory()) {
+                      searchDir(dir+files[o]);
+                    } else if (files[o].isFile()) {
+                      soundsList += dir.slice(originalDir.length) + o;
+                    } else {
+                      winston.error(`${o} is neither file nor directory!`);
+                    }
+                  });
+                  // let f = files.filter(f => f.split(".").pop() === "mp3"|| "wav");
+                });
+              }
+              await searchDir(originalDir);
+              msg.channel.send({"embed":{
+                "title":"Sounds",
+                "description":soundsList,
+              }});
+            } catch (e) {
+              winston.error(e);
+            }
+
+            break;
+
           case 'play':
             //not yet intended to work
-            return;
+            // return; //fallthrough
           default:
-
-        }
-        let path = `./Sounds/${args[0]}.wav`;
-        if (!fs.existsSync(path)) {
-          path = `./Sounds/${args[0]}.mp3`;
-          if (!fs.existsSync(path)) {
-            msg.reply(`couldn't find Sound`);
-            return;
-          }
-        }
+            let path = `./Sounds/${args[0]}.wav`;
+            if (!fs.existsSync(path)) {
+              path = `./Sounds/${args[0]}.mp3`;
+              if (!fs.existsSync(path)) {
+                msg.reply(`couldn't find Sound`);
+                return;
+              }
+            }
 
 
-        let VC = await msg.member.voiceChannel;
-        if (VC == undefined) {
-          msg.reply(`You are not in a voiceChannel`);
-          return;
+            let VC = await msg.member.voiceChannel;
+            if (VC == undefined) {
+              msg.reply(`You are not in a voiceChannel`);
+              return;
+            }
+            await VC.join().then(connection => {
+              let dispatcher = connection.playFile(path);
+              dispatcher.on("end", end => {
+                // setTimeout(function (msg){VC.leave(); IsReady = 1;}, 1500, msg);
+              });
+            }).catch(err => winston.error(err));
+            // break;
         }
-        await VC.join().then(connection => {
-          let dispatcher = connection.playFile(path);
-          dispatcher.on("end", end => {
-            setTimeout(function (msg){VC.leave(); IsReady = 1;}, 1500, msg);
-          });
-        }).catch(err => winston.error(err));
-        break;
 
 
       }
