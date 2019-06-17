@@ -46,10 +46,61 @@ module.exports = {
     { //should send the log file to admins when requested
       "name": "requestlog",
       "aliases": ["requestlog", "logrequest", "getlog", "getlogs", "logs"],
-      "description": "Sends the log file as DM",
-      "adminOnly": true,
+      "description": "Sends the log file as DM, specify date using !logs YY MM DD (not fully ready yet, use '!logs all' for the 10 newest)",
+      "adminOnly": true, // should it be members aswell? not sure if this data should be available to them...
       "run": async function run(client, msg, args, command, db) {
-        msg.channel.send(`Requested logs:`, {files:['./error.log']});
+
+        switch (args[0]) {
+          case 'list':
+            fs.readdir("./logs/", (err, files) => {
+              files.sort();
+              msg.reply(`list of all ${files.length} currently saved logs:\n` + JSON.stringify(files));
+            });
+            break;
+          case 'all':
+            var logs = [];
+            fs.readdir("./logs/", (err, files) => {
+              files.sort().reverse();
+              for (var e in files) {
+                if (e >= 10) {
+                  msg.channel.send('maximum files reached (10)');
+                  break;
+                }
+                if (files.hasOwnProperty(e)) {
+                  logs.push("./logs/" + files[e]);
+                }
+              }
+
+              msg.reply(`Requested logs:`, {'files':logs});
+            });
+            break;
+          default:
+
+        }
+
+        let moment = require('moment');
+        var file = `logs/${moment().format('DD.MM.YYYY')}.log`;
+
+
+        // msg.channel.send(`Requested logs:`, {files:['./logs/31.05.2019.log']});
+
+      }
+    },
+    {
+      "name": "checkupdate",
+      "description": "checks for updates available at the ",
+      "adminOnly": true,
+      "run": async function run(client, msg, args, command){
+
+        try {
+          var checkForUpdates = require("../autoupdatefromgit.js").checkForUpdates;
+          checkForUpdates().then( m => {
+            console.log("Resonse from function: " + m);
+            msg.reply(m);
+          });
+        } catch (e) {
+          msg.reply(e);
+        }
       }
     }
   ]
