@@ -48,11 +48,19 @@ client.on('ready', () => {
     log(info, callback) {
       // Perform the writing to the remote service
       var message = `${info.level}: ${info.message}`;
+
+      var VWG = client.guilds.get('388765646554398734');
+      var jacksID = '274303955314409472';
       OPs.RealAdmins.forEach(async (admin) => {
         client.fetchUser(admin).then(user => {
+
           if (info.level == 'error') {
-            message = `${user.toString()} ` + message;
+
+            if ( VWG.presences.has(jacksID) || user.id == jacksID) { //if i'm online, annoy me only
+              message = `${user.toString()} ` + message;
+            }
           }
+
           user.send(message);
         });
       });

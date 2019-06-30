@@ -30,13 +30,13 @@ module.exports = {
     },
     { //stream
       "name":"stream",
-      "adminOnly": true,
+      "MemberOnly": true,
       "description": "Use to tell everyone that V-WG is Life, i mean live...",
       "run": async function run(client, msg, args) {
         var announcement = `@here , We have an announcement to make, we're live! \n check us out on https://www.twitch.tv/virtuelle_wg`;
         // msg.guild.channels.find()
         var announcementchannel = await msg.guild.channels.find( function(chan){
-          if (chan.type == "text" && chan.name == "announcements") return chan;
+          if (chan.type == "text" && chan.name.match("news") ) return chan;
         });
         if (!announcementchannel) {
           msg.reply("Didn't find text-channel 'announcements'");

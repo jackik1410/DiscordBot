@@ -25,9 +25,13 @@ module.exports = {
         WEBHOOK.send(`<@&388765646554398734>`,{
           embeds:[
             {
-            "title": content[0],
-            "color": 2735296,
-            "description": content[1]
+              "title": content[0],
+              "color": 2735296,
+              "description": content[1],
+              "footer": {
+                "icon_url": msg.author.avatar.avatarURL,
+                "text": msg.member.nickname || msg.author.username
+              }
             }
           ]
         })
