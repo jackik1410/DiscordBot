@@ -52,5 +52,5 @@ if (doAutoUpdate) {
 }
 
 module.exports = {
-  "checkForUpdates": checkForUpdates()
+  "checkForUpdates": checkForUpdates
 }

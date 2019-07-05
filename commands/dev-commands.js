@@ -50,7 +50,7 @@ module.exports = {
       "description":"reloads all commands (slightly faster than restarting)",
       "adminOnly": true,
       "run": async function run(){
-        require('./bot.js').resetcommands();
+        require('../bot.js').resetcommands();
       }
     },
     { // bot stats             shows embeded message with some stats of the bot

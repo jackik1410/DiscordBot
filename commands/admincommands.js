@@ -96,9 +96,11 @@ module.exports = {
           var checkForUpdates = require("../autoupdatefromgit.js").checkForUpdates;
           checkForUpdates().then( m => {
             console.log("Resonse from function: " + m);
-            msg.reply(m);
+            msg.reply(m||"no updates");
           });
         } catch (e) {
+          console.log(e);
+          winston.error(e);
           msg.reply(e);
         }
       }

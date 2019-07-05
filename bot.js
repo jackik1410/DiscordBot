@@ -200,14 +200,9 @@ client.on('message', async msg => {
     if (ListedCommand.MemberOnly == true && !msg.member.roles.some(r => ["Moderator", "Mitbewohner", "Admin", "el jefe"].includes(r.name)) && !OPs.RealAdmins.includes(msg.author.id)) { // || msg.guild.id != '525972362617683979'
       msg.reply(`It seems you weren't invited to the party ${msg.author.username}, only Members are allowed that command on the V-WG server.`);
     }
+    winston.info(`${OPs.RealAdmins.includes(msg.author.id)?"Admin ":""}${msg.author.toString()} ran command: ${msg.content.slice(client.prefix.length)}`);
     ListedCommand.run(client, msg, args, command, db).catch(err => winston.error(err));
 
-    if (OPs.RealAdmins.includes(msg.author.id)) {
-      var info = `Admin ${msg.author.username} ran command: ${msg.content.slice(1)}`;
-    } else {
-      var info = `${msg.author.toString()} ran command: ${msg.content.slice(1)}`;
-    }
-    winston.info(info);
     return;
   }
 
