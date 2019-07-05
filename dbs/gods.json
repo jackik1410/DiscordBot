@@ -1,0 +1,104 @@
+{
+  "categories":{
+    "roles": ["hunter", "mage", "warrior", "asassin", "guardian"],
+    "pantheons": ["mayan", "roman", "egyptian", "hindu", "greek", "norse", "chinese", "african", "japanese", "voodoo", "celtic"]
+  },
+  "gods":[
+    {
+      "name":"Achilles",
+      "role":"warrior",
+      "type":"physical",
+      "pantheon":"greek"
+    },{
+      "name":"Agni",
+      "role":"mage",
+      "type":"magical",
+      "pantheon":"hindu"
+    },{
+      "name":"Ah Muzen cab",
+      "role":"hunter",
+      "type":"physical",
+      "pantheon":"mayan"
+    },{
+      "name":"Ah Puch",
+      "role":"mage",
+      "type":"magical",
+      "pantheon":"mayan"
+    },{
+      "name":"Amaterasu",
+      "role":"warrior",
+      "type":"physical",
+      "pantheon":"japanese"
+    },{
+      "name":"Anhur",
+      "role":"hunter",
+      "type":"physical",
+      "pantheon":"mayan"
+    },{
+      "name":"Anubis",
+      "role":"mage",
+      "type":"magical",
+      "pantheon":"egyptian"
+    },{
+      "name":"Ao Kuang",
+      "role":"mage",
+      "type":"magical",
+      "pantheon":"chinese"
+    },{
+      "name":"Aphrodite",
+      "role":"mage",
+      "type":"magical",
+      "pantheon":"greek"
+    },{
+      "name":"Apollo",
+      "role":"hunter",
+      "type":"physical",
+      "pantheon":"greek"
+    },{
+      "name":"Arachne",
+      "role":"assasin",
+      "type":"physical",
+      "pantheon":"greek"
+    },{
+      "name":"Ares",
+      "role":"guardian",
+      "type":"magical",
+      "pantheon":"greek"
+    },{
+      "name":"Artemis",
+      "role":"hunter",
+      "type":"physical",
+      "pantheon":"greek"
+    },{
+      "name":"Artio",
+      "role":"guardian",
+      "type":"magical",
+      "pantheon":"celtic"
+    },{
+      "name":"Athena",
+      "role":"guradian",
+      "type":"magical",
+      "pantheon":"greek"
+    },{
+      "name":"Awilix",
+      "role":"assasin",
+      "type":"physical",
+      "pantheon":"mayan"
+    },{
+      "name": "Kukulkan",
+      "role": "mage",
+      "type": "magical",
+      "pantheon":"mayan"
+    }
+  ]
+}
+
+
+/*
+
+{
+  "name":"",
+  "role":"",
+  "type":"magical",
+  "pantheon":""
+},

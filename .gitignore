@@ -3,3 +3,5 @@ logs/***
 node_modules/***
 Sounds/***
 dbs/***
+
+!dbs/gods.json
