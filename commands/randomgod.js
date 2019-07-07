@@ -1,22 +1,62 @@
 const low = require('lowdb');
 const FileSync = require('lowdb/adapters/FileSync');
-const adapter = new FileSync('./dbs/gods.json');
-const db = low(adapter);
+var adapter = new FileSync('./dbs/gods.json');
+var db = low(adapter);
 
 var gods = db.get('gods').value();
 var categories = db.get('categories').value();
 
 
 
-function SendGodInfo(msg, god){
-  msg.channel.send(`chosen god is: ${god.name}`, {
+
+function FullGod(godObject){
+  try {
+
+    if (!godObject.attack) {
+      godObject.type = new Promise((resolve, reject) => {
+        if (["mage", "hunter"].includes(godObject.role)) {
+          resolve("ranged");
+        } else if (["assassin", "warrior", "guardian"].includes(godObject.role)) {
+          resolve("melee");
+        } else reject();
+      }).catch(e => console.log(e));
+    }
+    if (!godObject.type) {
+      godObject.type = new Promise((resolve, reject) => {
+          if (["mage", "guardian"].includes(godObject.role)) {
+            resolve("magical");
+          } else if (["assassin", "warrior", "hunter"].includes(godObject.role)) {
+            resolve("physical");
+          } else reject();
+          }).catch(e => console.log(e));
+    }
+
+
+  } catch (e) {
+    winston.log(e);
+  } finally {
+
+  }
+  // return god;
+}
+
+
+async function SendGodInfo(msg, god, full){
+    // console.log(god);
+    FullGod(god);
+    // console.log(god);
+  var GodInfo = {
     "embed":{
       "title":god.name,
       "description": god.role + " ".repeat(10-god.role.length) + " - " + god.pantheon
     }
-  });
-}
+  };
+  if (full) {
+    GodInfo.embed.description += `\n${await god.type} ${await god.attack} attack`;
+  }
 
+  msg.channel.send(`chosen god is: ${god.name}`, GodInfo);
+}
 
 module.exports = {
   "CommandArray":[
@@ -28,9 +68,38 @@ module.exports = {
 
         var god;
 
+        // god.prototype.methodName = function () {
+        //   if (!this.attack) {
+        //     if (["mage", "hunter"].includes(this.role)) {
+        //       this.attack= "ranged";
+        //     } else if (["assassin", "warrior", "guardian"].includes(this.role)) {
+        //       this.attack= "melee";
+        //     }
+        //   }
+        // };
         switch (args[0]) {
+          // case 'clean':
+          //   if (!client.isUserAdmin(msg.author)) {
+          //     msg.reply(`nice try ${msg.author.name}`);
+          //     return;
+          //   }
+          //   adapter = new FileSync('./dbs/gods.json');
+          //   db = low(adapter);
+          //
+          //   gods = db.get('gods').value();
+          //   // categories = db.get('categories').value();
+          //
+          //   gods.forEach(async g =>{
+          //     delete g.type;
+          //   });
+          //
+          //
+          //   db.set('gods', gods).write(); //writing in changes back to file
+          //   break;
           case 'sort':
             try {
+              adapter = new FileSync('./dbs/gods.json');
+              db = low(adapter);
 
               gods = db.get('gods').value();
               categories = db.get('categories').value();
@@ -83,7 +152,7 @@ module.exports = {
           case 'list':
             // msg.channel.send(`in the future, this will send info about arguments and stuff`);
             var list=[];
-            await gods.forEach( god =>{
+            await gods.forEach( god => {
               list.push({
                 "name":god.name || "none",
                 "value":`${god.role + " ".repeat(10-god.role.length)} -  ${god.pantheon}`,
@@ -105,12 +174,24 @@ module.exports = {
             return;
             // break;
 
+            case 'info':
+              if (args[1]) {
+                god = gods.find(g => g.name.match(args[1]));
+                if (god) {
+                  SendGodInfo(msg, god, true);
+                } else {
+                  msg.reply(`I couldn't find a god with the name: ${args[1]}`);
+                }
+              } else {
+                msg.reply(`Please specify which god to give info about`);
+              }
+              break;
           case 'all':
           case 'any':
           case undefined:
 
             god = gods[ Math.floor(Math.random() * gods.length) ];
-            SendGodInfo(msg, god);
+            SendGodInfo(msg, god, true);
             return;
           default:
 
@@ -144,6 +225,7 @@ module.exports = {
             }
             for (var i = 0; i < 1000; i++){ // to have a chance to recover if all checks fail, only try 1.000 times
               god = gods[ Math.floor(Math.random() * gods.length) ]; //chose random god
+              FullGod(god);//expands to full detail
 
               // console.log(god.name + " - " + god[criteria] + "===" + args[0] );
               // console.log( (god[criteria] === args[0].toLowerCase()) + " " + typeof god[criteria] + "===" + typeof args[0]);
