@@ -1,560 +1,778 @@
 {
-  "categories": {
-    "attack": [
-      "melee",
-      "ranged"
-    ],
-    "type": [
-      "magical",
-      "physical"
-    ],
-    "role": [
-      "assassin",
-      "guardian",
-      "hunter",
-      "mage",
-      "warrior"
-    ],
-    "pantheon": [
-      "african",
-      "arthurian",
-      "celtic",
-      "chinese",
-      "egyptian",
-      "greek",
-      "hindu",
-      "japanese",
-      "mayan",
-      "norse",
-      "polynesian",
-      "roman",
-      "slavic",
-      "voodoo",
-      "yoruba"
+  "smite": {
+    "info": {
+      "charname": "gods",
+      "charinfo": "return `${char.role} - ${char.pantheon}`",
+      "charfullinfo": "return `${char.role} - ${char.pantheon}\n${char.attack} ${char.type} attacker`"
+    },
+    "categories": {
+      "attack": [
+        "melee",
+        "ranged"
+      ],
+      "type": [
+        "magical",
+        "physical"
+      ],
+      "role": [
+        "assassin",
+        "guardian",
+        "hunter",
+        "mage",
+        "warrior"
+      ],
+      "pantheon": [
+        "african",
+        "arthurian",
+        "celtic",
+        "chinese",
+        "egyptian",
+        "greek",
+        "hindu",
+        "japanese",
+        "mayan",
+        "norse",
+        "polynesian",
+        "roman",
+        "slavic",
+        "voodoo",
+        "yoruba"
+      ]
+    },
+    "chars": [
+      {
+        "name": "Achilles",
+        "role": "warrior",
+        "pantheon": "greek",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Agni",
+        "role": "mage",
+        "pantheon": "hindu",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Ah Muzen cab",
+        "role": "hunter",
+        "pantheon": "mayan",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Ah Puch",
+        "role": "mage",
+        "pantheon": "mayan",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Amaterasu",
+        "role": "warrior",
+        "pantheon": "japanese",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Anhur",
+        "role": "hunter",
+        "pantheon": "mayan",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Anubis",
+        "role": "mage",
+        "pantheon": "egyptian",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Ao Kuang",
+        "role": "mage",
+        "pantheon": "chinese",
+        "attack": "melee",
+        "type": "magical"
+      },
+      {
+        "name": "Aphrodite",
+        "role": "mage",
+        "pantheon": "greek",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Apollo",
+        "role": "hunter",
+        "pantheon": "greek",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Arachne",
+        "role": "assassin",
+        "pantheon": "greek",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Ares",
+        "role": "guardian",
+        "pantheon": "greek",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Artemis",
+        "role": "hunter",
+        "pantheon": "greek",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Artio",
+        "role": "guardian",
+        "pantheon": "celtic",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Athena",
+        "role": "guardian",
+        "pantheon": "greek",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Awilix",
+        "role": "assassin",
+        "pantheon": "mayan",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Bacchus",
+        "role": "guardian",
+        "pantheon": "greek",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Bakasura",
+        "role": "assassin",
+        "pantheon": "hindu",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Baron Samedi",
+        "role": "mage",
+        "pantheon": "voodoo",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Bastet",
+        "role": "assassin",
+        "pantheon": "egyptian",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Bellona",
+        "role": "warrior",
+        "pantheon": "roman",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Cabracán",
+        "role": "guardian",
+        "pantheon": "mayan",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Camazotz",
+        "role": "assassin",
+        "pantheon": "mayan",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Cerberus",
+        "role": "guardian",
+        "pantheon": "greek",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Cernunnos",
+        "role": "hunter",
+        "pantheon": "celtic",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Chaac",
+        "role": "warrior",
+        "pantheon": "mayan",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Chang'e",
+        "role": "mage",
+        "pantheon": "chinese",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Chernobog",
+        "role": "hunter",
+        "pantheon": "slavic",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Chiron",
+        "role": "hunter",
+        "pantheon": "greek",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Chronos",
+        "role": "mage",
+        "pantheon": "greek",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Cu Chulainn",
+        "role": "warrior",
+        "pantheon": "celtic",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Cupid",
+        "role": "hunter",
+        "pantheon": "roman",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Daji",
+        "role": "assassin",
+        "pantheon": "chinese",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Discoria",
+        "role": "mage",
+        "pantheon": "roman",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Erlang Shen",
+        "role": "warrior",
+        "pantheon": "chinese",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Fafnir",
+        "role": "guardian",
+        "pantheon": "norse",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Fenrir",
+        "role": "assassin",
+        "pantheon": "norse",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Freya",
+        "role": "mage",
+        "pantheon": "norse",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Ganesha",
+        "role": "guardian",
+        "pantheon": "hindu",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Geb",
+        "role": "guardian",
+        "pantheon": "egyptian",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Guan Yu",
+        "role": "warrior",
+        "pantheon": "chinese",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Hachiman",
+        "role": "hunter",
+        "pantheon": "chinese",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Hades",
+        "role": "mage",
+        "pantheon": "greek",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "He Bo",
+        "role": "mage",
+        "pantheon": "chinese",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Hel",
+        "role": "mage",
+        "pantheon": "norse",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Hera",
+        "role": "mage",
+        "pantheon": "greek",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Herkules",
+        "role": "warrior",
+        "pantheon": "roman",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Horus",
+        "role": "warrior",
+        "pantheon": "egyptian",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Hou Yi",
+        "role": "hunter",
+        "pantheon": "chinese",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Hun Batz",
+        "role": "assassin",
+        "pantheon": "mayan",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Isis",
+        "role": "mage",
+        "pantheon": "egyptian",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Izanami",
+        "role": "hunter",
+        "pantheon": "japanese",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Janus",
+        "role": "mage",
+        "pantheon": "roman",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Jing Wei",
+        "role": "hunter",
+        "pantheon": "chinese",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Jörmungandr",
+        "role": "guardian",
+        "pantheon": "norse",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Kali",
+        "role": "assassin",
+        "pantheon": "hindu",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Khepri",
+        "role": "guardian",
+        "pantheon": "egyptian",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "King Arthur",
+        "role": "warrior",
+        "pantheon": "arthurian",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Kukulkan",
+        "role": "mage",
+        "pantheon": "mayan",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Kumbhakarna",
+        "role": "guardian",
+        "pantheon": "hindu",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Kuzenbo",
+        "role": "guardian",
+        "pantheon": "japanese",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Loki",
+        "role": "assassin",
+        "pantheon": "norse",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Medusa",
+        "role": "hunter",
+        "pantheon": "greek",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Mercury",
+        "role": "assassin",
+        "pantheon": "roman",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Merlin",
+        "role": "mage",
+        "pantheon": "arthurian",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Ne Zha",
+        "role": "assassin",
+        "pantheon": "chinese",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Neith",
+        "role": "hunter",
+        "pantheon": "egyptian",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Nemisis",
+        "role": "assassin",
+        "pantheon": "greek",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Nike",
+        "role": "warrior",
+        "pantheon": "greek",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Nox",
+        "role": "mage",
+        "pantheon": "greek",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Nu Wa",
+        "role": "mage",
+        "pantheon": "chinese",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Odin",
+        "role": "guardian",
+        "pantheon": "norse",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Olorun",
+        "role": "mage",
+        "pantheon": "yoruba",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Osiris",
+        "role": "warrior",
+        "pantheon": "egyptian",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Pele",
+        "role": "assassin",
+        "pantheon": "polynesian",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Persephone",
+        "role": "mage(temporary)",
+        "pantheon": "greek"
+      },
+      {
+        "name": "Poseidon",
+        "role": "mage",
+        "pantheon": "greek",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Ra",
+        "role": "mage",
+        "pantheon": "egyptian",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Raijin",
+        "role": "mage",
+        "pantheon": "japanese",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Rama",
+        "role": "hunter",
+        "pantheon": "hindu",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Ratatoskr",
+        "role": "assassin",
+        "pantheon": "norse",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Ravana",
+        "role": "assassin",
+        "pantheon": "hindu",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Scylla",
+        "role": "mage",
+        "pantheon": "greek",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Serqet",
+        "role": "assassin",
+        "pantheon": "egyptian",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Set",
+        "role": "assassin",
+        "pantheon": "egyptian",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Skadi",
+        "role": "hunter",
+        "pantheon": "norse",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Sobek",
+        "role": "guardian",
+        "pantheon": "egyptian",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Sol",
+        "role": "mage",
+        "pantheon": "norse",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Sun Wukong",
+        "role": "warrior",
+        "pantheon": "chinese",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Susano",
+        "role": "assassin",
+        "pantheon": "japanese",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Sylvanus",
+        "role": "guardian",
+        "pantheon": "roman",
+        "attack": "ranged",
+        "type": "magical"
+      },
+      {
+        "name": "Terra",
+        "role": "guardian",
+        "pantheon": "roman",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Thanatos",
+        "role": "assassin",
+        "pantheon": "greek",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "The Morrigan",
+        "role": "mage",
+        "pantheon": "celtic",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Thor",
+        "role": "assassin",
+        "pantheon": "norse",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Thoth",
+        "role": "mage",
+        "pantheon": "egyptian",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Tyr",
+        "role": "warrior",
+        "pantheon": "norse",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Ullr",
+        "role": "hunter",
+        "pantheon": "norse",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Vamana",
+        "role": "warrior",
+        "pantheon": "hindu",
+        "type": "physical",
+        "attack": "melee"
+      },
+      {
+        "name": "Vulcan",
+        "role": "mage",
+        "pantheon": "roman",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Xblanque",
+        "role": "hunter",
+        "pantheon": "mayan",
+        "type": "physical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Xing Tian",
+        "role": "guardian",
+        "pantheon": "chinese",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Ymir",
+        "role": "guardian",
+        "pantheon": "norse",
+        "type": "magical",
+        "attack": "melee"
+      },
+      {
+        "name": "Zeus",
+        "role": "mage",
+        "pantheon": "greek",
+        "type": "magical",
+        "attack": "ranged"
+      },
+      {
+        "name": "Zhong Kui",
+        "role": "mage",
+        "pantheon": "chinese",
+        "type": "magical",
+        "attack": "ranged"
+      }
     ]
-  },
-  "gods": [
-    {
-      "name": "Achilles",
-      "role": "warrior",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Agni",
-      "role": "mage",
-      "pantheon": "hindu"
-    },
-    {
-      "name": "Ah Muzen cab",
-      "role": "hunter",
-      "pantheon": "mayan"
-    },
-    {
-      "name": "Ah Puch",
-      "role": "mage",
-      "pantheon": "mayan"
-    },
-    {
-      "name": "Amaterasu",
-      "role": "warrior",
-      "pantheon": "japanese"
-    },
-    {
-      "name": "Anhur",
-      "role": "hunter",
-      "pantheon": "mayan"
-    },
-    {
-      "name": "Anubis",
-      "role": "mage",
-      "pantheon": "egyptian"
-    },
-    {
-      "name": "Ao Kuang",
-      "role": "mage",
-      "pantheon": "chinese",
-      "attack": "melee"
-    },
-    {
-      "name": "Aphrodite",
-      "role": "mage",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Apollo",
-      "role": "hunter",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Arachne",
-      "role": "assassin",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Ares",
-      "role": "guardian",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Artemis",
-      "role": "hunter",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Artio",
-      "role": "guardian",
-      "pantheon": "celtic"
-    },
-    {
-      "name": "Athena",
-      "role": "guardian",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Awilix",
-      "role": "assassin",
-      "pantheon": "mayan"
-    },
-    {
-      "name": "Bacchus",
-      "role": "guardian",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Bakasura",
-      "role": "assassin",
-      "pantheon": "hindu"
-    },
-    {
-      "name": "Baron Samedi",
-      "role": "mage",
-      "pantheon": "voodoo"
-    },
-    {
-      "name": "Bastet",
-      "role": "assassin",
-      "pantheon": "egyptian"
-    },
-    {
-      "name": "Bellona",
-      "role": "warrior",
-      "pantheon": "roman"
-    },
-    {
-      "name": "Cabracán",
-      "role": "guardian",
-      "pantheon": "mayan"
-    },
-    {
-      "name": "Camazotz",
-      "role": "assassin",
-      "pantheon": "mayan"
-    },
-    {
-      "name": "Cerberus",
-      "role": "guardian",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Cernunnos",
-      "role": "hunter",
-      "pantheon": "celtic"
-    },
-    {
-      "name": "Chaac",
-      "role": "warrior",
-      "pantheon": "mayan"
-    },
-    {
-      "name": "Chang'e",
-      "role": "mage",
-      "pantheon": "chinese"
-    },
-    {
-      "name": "Chernobog",
-      "role": "hunter",
-      "pantheon": "slavic"
-    },
-    {
-      "name": "Chiron",
-      "role": "hunter",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Chronos",
-      "role": "mage",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Cu Chulainn",
-      "role": "warrior",
-      "pantheon": "celtic"
-    },
-    {
-      "name": "Cupid",
-      "role": "hunter",
-      "pantheon": "roman"
-    },
-    {
-      "name": "Daji",
-      "role": "assassin",
-      "pantheon": "chinese"
-    },
-    {
-      "name": "Discoria",
-      "role": "mage",
-      "pantheon": "roman"
-    },
-    {
-      "name": "Erlang Shen",
-      "role": "warrior",
-      "pantheon": "chinese"
-    },
-    {
-      "name": "Fafnir",
-      "role": "guardian",
-      "pantheon": "norse"
-    },
-    {
-      "name": "Fenrir",
-      "role": "assassin",
-      "pantheon": "norse"
-    },
-    {
-      "name": "Freya",
-      "role": "mage",
-      "pantheon": "norse"
-    },
-    {
-      "name": "Ganesha",
-      "role": "guardian",
-      "pantheon": "hindu"
-    },
-    {
-      "name": "Geb",
-      "role": "guardian",
-      "pantheon": "egyptian"
-    },
-    {
-      "name": "Guan Yu",
-      "role": "warrior",
-      "pantheon": "chinese"
-    },
-    {
-      "name": "Hachiman",
-      "role": "hunter",
-      "pantheon": "chinese"
-    },
-    {
-      "name": "Hades",
-      "role": "mage",
-      "pantheon": "greek"
-    },
-    {
-      "name": "He Bo",
-      "role": "mage",
-      "pantheon": "chinese"
-    },
-    {
-      "name": "Hel",
-      "role": "mage",
-      "pantheon": "norse"
-    },
-    {
-      "name": "Hera",
-      "role": "mage",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Herkules",
-      "role": "warrior",
-      "pantheon": "roman"
-    },
-    {
-      "name": "Horus",
-      "role": "warrior",
-      "pantheon": "egyptian"
-    },
-    {
-      "name": "Hou Yi",
-      "role": "hunter",
-      "pantheon": "chinese"
-    },
-    {
-      "name": "Hun Batz",
-      "role": "assassin",
-      "pantheon": "mayan"
-    },
-    {
-      "name": "Isis",
-      "role": "mage",
-      "pantheon": "egyptian"
-    },
-    {
-      "name": "Izanami",
-      "role": "hunter",
-      "pantheon": "japanese"
-    },
-    {
-      "name": "Janus",
-      "role": "mage",
-      "pantheon": "roman"
-    },
-    {
-      "name": "Jing Wei",
-      "role": "hunter",
-      "pantheon": "chinese"
-    },
-    {
-      "name": "Jörmungandr",
-      "role": "guardian",
-      "pantheon": "norse"
-    },
-    {
-      "name": "Kali",
-      "role": "assassin",
-      "pantheon": "hindu"
-    },
-    {
-      "name": "Khepri",
-      "role": "guardian",
-      "pantheon": "egyptian"
-    },
-    {
-      "name": "King Arthur",
-      "role": "warrior",
-      "pantheon": "arthurian"
-    },
-    {
-      "name": "Kukulkan",
-      "role": "mage",
-      "pantheon": "mayan"
-    },
-    {
-      "name": "Kumbhakarna",
-      "role": "guardian",
-      "pantheon": "hindu"
-    },
-    {
-      "name": "Kuzenbo",
-      "role": "guardian",
-      "pantheon": "japanese"
-    },
-    {
-      "name": "Loki",
-      "role": "assassin",
-      "pantheon": "norse"
-    },
-    {
-      "name": "Medusa",
-      "role": "hunter",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Mercury",
-      "role": "assassin",
-      "pantheon": "roman"
-    },
-    {
-      "name": "Merlin",
-      "role": "mage",
-      "pantheon": "arthurian"
-    },
-    {
-      "name": "Ne Zha",
-      "role": "assassin",
-      "pantheon": "chinese"
-    },
-    {
-      "name": "Neith",
-      "role": "hunter",
-      "pantheon": "egyptian"
-    },
-    {
-      "name": "Nemisis",
-      "role": "assassin",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Nike",
-      "role": "warrior",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Nox",
-      "role": "mage",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Nu Wa",
-      "role": "mage",
-      "pantheon": "chinese"
-    },
-    {
-      "name": "Odin",
-      "role": "guardian",
-      "pantheon": "norse"
-    },
-    {
-      "name": "Olorun",
-      "role": "mage",
-      "pantheon": "yoruba"
-    },
-    {
-      "name": "Osiris",
-      "role": "warrior",
-      "pantheon": "egyptian"
-    },
-    {
-      "name": "Pele",
-      "role": "assassin",
-      "pantheon": "polynesian"
-    },
-    {
-      "name": "Poseidon",
-      "role": "mage",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Ra",
-      "role": "mage",
-      "pantheon": "egyptian"
-    },
-    {
-      "name": "Raijin",
-      "role": "mage",
-      "pantheon": "japanese"
-    },
-    {
-      "name": "Rama",
-      "role": "hunter",
-      "pantheon": "hindu"
-    },
-    {
-      "name": "Ratatoskr",
-      "role": "assassin",
-      "pantheon": "norse"
-    },
-    {
-      "name": "Ravana",
-      "role": "assassin",
-      "pantheon": "hindu"
-    },
-    {
-      "name": "Scylla",
-      "role": "mage",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Serqet",
-      "role": "assassin",
-      "pantheon": "egyptian"
-    },
-    {
-      "name": "Set",
-      "role": "assassin",
-      "pantheon": "egyptian"
-    },
-    {
-      "name": "Skadi",
-      "role": "hunter",
-      "pantheon": "norse"
-    },
-    {
-      "name": "Sobek",
-      "role": "guardian",
-      "pantheon": "egyptian"
-    },
-    {
-      "name": "Sol",
-      "role": "mage",
-      "pantheon": "norse"
-    },
-    {
-      "name": "Sun Wukong",
-      "role": "warrior",
-      "pantheon": "chinese"
-    },
-    {
-      "name": "Susano",
-      "role": "assassin",
-      "pantheon": "japanese"
-    },
-    {
-      "name": "Sylvanus",
-      "role": "guardian",
-      "pantheon": "roman",
-      "attack": "ranged"
-    },
-    {
-      "name": "Terra",
-      "role": "guardian",
-      "pantheon": "roman"
-    },
-    {
-      "name": "Thanatos",
-      "role": "assassin",
-      "pantheon": "greek"
-    },
-    {
-      "name": "The Morrigan",
-      "role": "mage",
-      "pantheon": "celtic"
-    },
-    {
-      "name": "Thor",
-      "role": "assassin",
-      "pantheon": "norse"
-    },
-    {
-      "name": "Thoth",
-      "role": "mage",
-      "pantheon": "egyptian"
-    },
-    {
-      "name": "Tyr",
-      "role": "warrior",
-      "pantheon": "norse"
-    },
-    {
-      "name": "Ullr",
-      "role": "hunter",
-      "pantheon": "norse"
-    },
-    {
-      "name": "Vamana",
-      "role": "warrior",
-      "pantheon": "hindu"
-    },
-    {
-      "name": "Vulcan",
-      "role": "mage",
-      "pantheon": "roman"
-    },
-    {
-      "name": "Xblanque",
-      "role": "hunter",
-      "pantheon": "mayan"
-    },
-    {
-      "name": "Xing Tian",
-      "role": "guardian",
-      "pantheon": "chinese"
-    },
-    {
-      "name": "Ymir",
-      "role": "guardian",
-      "pantheon": "norse"
-    },
-    {
-      "name": "Zeus",
-      "role": "mage",
-      "pantheon": "greek"
-    },
-    {
-      "name": "Zhong Kui",
-      "role": "mage",
-      "pantheon": "chinese"
-    }
-  ]
+  }
 }

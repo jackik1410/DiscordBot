@@ -3,9 +3,9 @@ const FileSync = require('lowdb/adapters/FileSync');
 var adapter = new FileSync('./dbs/gods.json');
 var db = low(adapter);
 
-var gods = db.get('gods').value();
-var categories = db.get('categories').value();
-
+var chars = db.get('smite.chars').value();
+var categories = db.get('smite.categories').value();
+var chosengame = db.get('smite').value();
 
 
 
@@ -19,7 +19,7 @@ function FullGod(godObject){
         } else if (["assassin", "warrior", "guardian"].includes(godObject.role)) {
           resolve("melee");
         } else reject();
-      }).catch(e => console.log(e));
+      }).then().catch(e => console.log(e));
     }
     if (!godObject.type) {
       godObject.type = new Promise((resolve, reject) => {
@@ -28,7 +28,7 @@ function FullGod(godObject){
           } else if (["assassin", "warrior", "hunter"].includes(godObject.role)) {
             resolve("physical");
           } else reject();
-          }).catch(e => console.log(e));
+        }).then().catch(e => console.log(e));
     }
 
 
@@ -37,129 +37,141 @@ function FullGod(godObject){
   } finally {
 
   }
-  // return god;
+  // return char;
 }
 
 
-async function SendGodInfo(msg, god, full){
-    // console.log(god);
-    FullGod(god);
-    // console.log(god);
-  var GodInfo = {
+async function SendGodInfo(msg, game, char, full){
+    // console.log(char);
+    FullGod(char);
+    // console.log(char);
+  var charInfo = {
     "embed":{
-      "title":god.name,
-      "description": god.role + " ".repeat(10-god.role.length) + " - " + god.pantheon
+      "title":char.name,
+      "description": ""
     }
   };
-  if (full) {
-    GodInfo.embed.description += `\n${await god.type} ${await god.attack} attack`;
+  var description;
+  if (full && game.info.charfullinfo) {
+    description = await (Function('char', game.info.charfullinfo))(char);
+  } else if (game.info.charinfo) {
+    description = await (Function('char', game.info.charinfo))(char);
+  } else {
+    for (var property in char) {
+      if (char.hasOwnProperty(property)) {
+        if (property == "name") break;
+        description += " " + char[property];
+      }
+    }
   }
+  charInfo.embed.description = description || description(char);
 
-  msg.channel.send(`chosen god is: ${god.name}`, GodInfo);
+  console.log(charInfo);
+
+  msg.channel.send(`chosen god is: ${char.name}`, charInfo);
 }
 
 module.exports = {
   "CommandArray":[
     {
       "name":"randomgod",
-      "description":"none yet",
+      "aliases":["rgod","random"],
+      "description":`usage: ${this.name} list, ${this.name} any, ${this}`,
       // "MemberOnly": true,
       "run": async function run(client, msg, args, command){
+        console.log(this);
+        var char;
 
-        var god;
 
-        // god.prototype.methodName = function () {
-        //   if (!this.attack) {
-        //     if (["mage", "hunter"].includes(this.role)) {
-        //       this.attack= "ranged";
-        //     } else if (["assassin", "warrior", "guardian"].includes(this.role)) {
-        //       this.attack= "melee";
-        //     }
-        //   }
-        // };
         switch (args[0]) {
-          // case 'clean':
-          //   if (!client.isUserAdmin(msg.author)) {
-          //     msg.reply(`nice try ${msg.author.name}`);
-          //     return;
-          //   }
-          //   adapter = new FileSync('./dbs/gods.json');
-          //   db = low(adapter);
-          //
-          //   gods = db.get('gods').value();
-          //   // categories = db.get('categories').value();
-          //
-          //   gods.forEach(async g =>{
-          //     delete g.type;
-          //   });
-          //
-          //
-          //   db.set('gods', gods).write(); //writing in changes back to file
-          //   break;
           case 'sort':
             try {
               adapter = new FileSync('./dbs/gods.json');
               db = low(adapter);
 
-              gods = db.get('gods').value();
-              categories = db.get('categories').value();
-              // categories.sort();
-              Object.keys(categories).forEach(async e => {
-                categories[e].sort();
-              });
-              gods.sort(function(a,b){
-                if ( a.name < b.name ){
-                  return -1;
-                } else if ( a.name > b.name ){
-                  return 1;
-                } else return 0;
-              });
-
-              db.set('gods', gods).write();
-              db.set('categories', categories).write();
-
-              //now checking if all properties have proper values
-              await gods.forEach(async g =>{
-                Object.keys(g).forEach( p => {
-                  if (p == "name") return;
-                  if (!categories[p].includes(g[p])) {
-                    console.log(`${g.name} has invalid property ${p}: ${g[p]}`);
-                  }
+              Object.keys(db.get('').__wrapped__).forEach(async game =>{
+                chars = db.get(`${game}.chars`).value();
+                categories = db.get(`${game}.categories`).value();
+                // categories.sort();
+                Object.keys(categories).forEach(async e => {
+                  categories[e].sort();
                 });
+                chars.sort(function(a,b){
+                  if ( a.name < b.name ){
+                    return -1;
+                  } else if ( a.name > b.name ){
+                    return 1;
+                  } else return 0;
+                });
+                console.log(`${game}: success,\n sorted all ${chars.length} ${db.get(`${game}.info.charname`).value() || characters}`);
+
+                db.set(`${game}.chars`, chars).write();
+                db.set(`${game}.categories`, categories).write();
+
+                //now checking if all properties have proper values
+                await chars.forEach(async c =>{ //for each char
+                  if (!c.type) {
+                    if (["hunter","assassin","warrior"].includes(c.role)) {
+                      c.type = "physical";
+                    } else if (["mage","guardian"].includes(c.role)) {
+                      c.type = "magical";
+                    }
+                  }
+                  if (!c.attack) {
+                    if (["hunter","mage"].includes(c.role)) {
+                      c.attack = "ranged";
+                    } else if (["assassin","guardian","warrior"].includes(c.role)) {
+                      c.attack = "melee";
+                    }
+                  }
+
+
+                  Object.keys(c).forEach( p => {
+                    if (p == "name") return;
+                    if (!categories[p].includes(c[p])) {
+                      console.log(`${c.name} has invalid property ${p}: ${c[p]}`);
+                    }
+                  });
+                });
+
+                db.set(`${game}.chars`, chars).write();
+
+
               });
 
             } catch (e) {
               console.log(e);
             } finally {
-              console.log(`success,\n sorted all ${gods.length}`);
+
             }
             return;
             break;
-          // case 'test':
-          //   console.log(
-          //     await Object.keys(categories).forEach(cat => {
-          //       if (categories[cat].includes(args[1])) {
-          //         console.log(cat);
-          //         console.log(categories[cat]);
-          //         return cat;
-          //       }
-          //     })
-          //   );
-          //   return;
-          //   break;
+          case 'test':
+            console.log(
+              await Object.keys(categories).forEach(cat => {
+                if (categories[cat].includes(args[1])) {
+                  console.log(cat);
+                  console.log(categories[cat]);
+                  return cat;
+                }
+              })
+            );
+            return;
+            break;
           case 'help':
-            msg.channel.send();
+            msg.channel.send(this.description);
+            return;
           case 'list':
             // msg.channel.send(`in the future, this will send info about arguments and stuff`);
             var list=[];
-            await gods.forEach( god => {
+            await chars.forEach( char => {
               list.push({
-                "name":god.name || "none",
-                "value":`${god.role + " ".repeat(10-god.role.length)} -  ${god.pantheon}`,
-                "inline":true
+                "name":char.name || "none",
+                "value": Function('char', chosengame.info.charinfo)(char),
+                "inline": true
               });
             });
-            msg.channel.send(`List of all ${gods.length} gods`);
+            msg.channel.send(`List of all ${chars.length} ${chosengame.info.charname||characters} - shown in ${Math.ceil(chars.length/24)} Parts`);
 
             var part = 1;
             while (list.length != 0 && list) {
@@ -176,22 +188,22 @@ module.exports = {
 
             case 'info':
               if (args[1]) {
-                god = gods.find(g => g.name.match(args[1]));
-                if (god) {
-                  SendGodInfo(msg, god, true);
+                char = chars.find(g => g.name.match(args[1]));
+                if (char) {
+                  SendGodInfo(msg, chosengame, char, true);
                 } else {
-                  msg.reply(`I couldn't find a god with the name: ${args[1]}`);
+                  msg.reply(`I couldn't find a char with the name: ${args[1]}`);
                 }
               } else {
-                msg.reply(`Please specify which god to give info about`);
+                msg.reply(`Please specify which char to give info about`);
               }
               break;
           case 'all':
           case 'any':
           case undefined:
 
-            god = gods[ Math.floor(Math.random() * gods.length) ];
-            SendGodInfo(msg, god, true);
+            char = chars[ Math.floor(Math.random() * chars.length) ];
+            SendGodInfo(msg, chosengame, char, true);
             return;
           default:
 
@@ -205,8 +217,8 @@ module.exports = {
           // console.log('2');
 
           if (args.length != 1 ) {
-            console.log('random any god');
-            god = gods[ Math.floor(Math.random() * gods.length) ];
+            // console.log('random any char');
+            char = chars[ Math.floor(Math.random() * chars.length) ];
 
           } else {
 
@@ -224,20 +236,20 @@ module.exports = {
               return;
             }
             for (var i = 0; i < 1000; i++){ // to have a chance to recover if all checks fail, only try 1.000 times
-              god = gods[ Math.floor(Math.random() * gods.length) ]; //chose random god
-              FullGod(god);//expands to full detail
+              char = chars[ Math.floor(Math.random() * chars.length) ]; //chose random char
+              FullGod(char);//expands to full detail
 
-              // console.log(god.name + " - " + god[criteria] + "===" + args[0] );
-              // console.log( (god[criteria] === args[0].toLowerCase()) + " " + typeof god[criteria] + "===" + typeof args[0]);
+              // console.log(char.name + " - " + char[criteria] + "===" + args[0] );
+              // console.log( (char[criteria] === args[0].toLowerCase()) + " " + typeof char[criteria] + "===" + typeof args[0]);
 
-              if (god[criteria].toLowerCase() === args[0].toLowerCase()) { //check if conforms to property value
+              if (char[criteria].toLowerCase() === args[0].toLowerCase()) { //check if conforms to property value
                 break; //exit if found
               }
             }
           }
 
-          SendGodInfo(msg, god);
-          // msg.channel.send(`chosen god is: ${await JSON.toString(god)}`);
+          SendGodInfo(msg, chosengame, char);
+          // msg.channel.send(`chosen char is: ${await JSON.toString(char)}`);
         }
       }
     }
