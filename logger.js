@@ -5,11 +5,6 @@ var auth = require('./auth.json');
 var OPs = require('./dbs/OPs.json');
 const fs = require("fs");
 
-const client = new Discord.Client({
-   token: auth.token,
-   autorun: true
-});
-client.login(auth.token);//needed
 
 winston.format.combine(
   winston.format.colorize(),
@@ -36,6 +31,7 @@ winston.add(new winston.transports.Console({level: 'silly',
 // winston.level = 'info';
   // new winston.transports.File({ filename: 'error.log', level: 'error' });
   // new winston.transports.File({ filename: 'combined.log' });
+var client = require('./client.js');
 client.on('ready', () => {
   class CustomTransport extends Transport {
     constructor(opts) {
@@ -85,6 +81,7 @@ const adapter = new FileSync('./dbs/db.json');
 const db = low(adapter);
 
 async function restart(reason, timeout){
+  // var client = require('./client.js');
   if (client.rebooting != undefined) {
     winston.info(`a restart is already scheduled`);
     return false;
@@ -92,6 +89,12 @@ async function restart(reason, timeout){
   if (timeout == undefined || typeof timeout != 'number') {
     timeout = 0;
   }
+
+  //Tell the world you're restarting
+  clearInterval(client.events.get("ActivityUpdate").runtime);
+  client.user.setPresence({status: 'dnd', game: { name: 'to my process shutting down', type: "LISTENING" }})
+  .then(winston.log).catch(winston.error);
+  client.user.setStatus('afk');
 
   winston.info(`RESTARTING BOT${(timeout ==0)?'':` in ${timeout}`}, reason:` + (reason != undefined)?reason:'no reason given');
   if (false) {//notify all voiceChannel users with a short message

@@ -77,7 +77,8 @@
     },
     {
       "name": "V-WG on twitch",
-      "details": {
+      "game": {
+        "url": "https://www.twitch.tv/virtuelle_wg",
         "type": "WATCHING"
       }
     }

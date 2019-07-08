@@ -1,6 +1,6 @@
 const db = require(`./logger.js`).db;
 const winston = require('./logger.js').winston;
-var client = require('./bot.js').client;
+var client = require('./client.js');
 
 var ConsoleCommands = { // commands defined just for CLI usage, primarily for debug and development
   "test": function (){
@@ -70,7 +70,7 @@ rl.on('line', (line) => {
           console.log('This command was intentionally deactivated for the CLI');
           return;
         }
-        winston.info(`running ${ListedCommand.name} from CLI`);
+        winston.info(`running \`${ListedCommand.name}\` from CLI`);
         ListedCommand.run(client, msg, args, command, db).catch(err => winston.error(err));
       }
     }

@@ -1,6 +1,6 @@
 
 var db = require('../logger.js').db;
-var client = require('../bot.js').client;
+var client = require('../client.js');
 
 
 //intialize

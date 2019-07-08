@@ -2,20 +2,33 @@ const Discord = require('discord.js'); //basic discord functionality
 var OPs = require('./dbs/OPs.json'); //to be admin, or not to be admin
 const fs = require("fs");
 
-const db = require(`./logger.js`).db; //database, for storing and and retreiving data
-const winston = require(`./logger.js`).winston; //provides logger functionality
 
 require('./autoupdatefromgit.js'); //automatically checks for updates and updates the bot if found, comment out if not wanted
 
-var auth = require('./auth.json'); // contains the authentication token for the bot
-const client = new Discord.Client({
-   token: auth.token, //can be manually edited here aswell to token: 'YouRTokenHeRe',
-   autorun: true
-});
-client.login(auth.token);//needed
-
+// var auth = require('./auth.json'); // contains the authentication token for the bot
+// const client = new Discord.Client({
+//    token: auth.token, //can be manually edited here aswell to token: 'YouRTokenHeRe',
+//    autorun: true
+// });
+// client.login(auth.token);//needed
+var client = require('./client.js');
 process.title = `running V-WG Bot`;//only you can see this
 client.prefix = "!"; // just change the prefix here
+
+console.log("client");
+console.log(client);
+// module.exports = {"client": client};
+
+const {db, winston} = require(`./logger.js`);
+//database: for storing and and retreiving data, winston: provides logger functionality
+
+//Defining some global functions for easier use
+client.isUserAdmin = function(user){
+  return OPs.admins.includes(user.id);
+};
+client.isUserRealAdmin = function(user){
+  return OPs.RealAdmins.includes(user.id);
+};
 
 
 //reading files and collecting the commands
@@ -90,6 +103,7 @@ async function loadCommands(){
           console.log(`        starting ${event.name} event loop every ${event.looptime}ms`);
           event.runtime = setInterval(event.run, event.looptime, client); //.catch(err => winston.error(err))
           //commandsloaded += 1; //these are events, not commands... unsure if i should include them
+          client.events.set(event.name, event);
         });
       }
     });
@@ -200,8 +214,12 @@ client.on('message', async msg => {
     if (ListedCommand.MemberOnly == true && !msg.member.roles.some(r => ["Moderator", "Mitbewohner", "Admin", "el jefe"].includes(r.name)) && !OPs.RealAdmins.includes(msg.author.id)) { // || msg.guild.id != '525972362617683979'
       msg.reply(`It seems you weren't invited to the party ${msg.author.username}, only Members are allowed that command on the V-WG server.`);
     }
-    winston.info(`${OPs.RealAdmins.includes(msg.author.id)?"Admin ":""}${msg.author.toString()} ran command: ${msg.content.slice(client.prefix.length)}`);
-    ListedCommand.run(client, msg, args, command, db).catch(err => winston.error(err));
+    winston.info(`${OPs.RealAdmins.includes(msg.author.id)?`Admin ${msg.author.username}`:msg.author.toString()} ran command: ${msg.content.slice(client.prefix.length)}`);
+    try {
+      ListedCommand.run(client, msg, args, command, db).catch(err => winston.error(err));
+    } catch (e) {
+      winston.log(e);
+    }
 
     return;
   }
