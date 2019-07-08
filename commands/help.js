@@ -13,7 +13,7 @@ module.exports = {
       let ListedCommand = client.commands.get(msg.content.slice(2+command.length)) || client.commands.get(client.aliases.get(msg.content.slice(2+command.length)));
       if (ListedCommand) {
         if (ListedCommand.adminOnly && !OPs.admins.includes(msg.author.id)){
-          msg.reply("You have no acces to this command, " + msg.author.username);
+          msg.reply("You have no access to this command, " + msg.author.username);
           return;
         }
         msg.channel.send(`${ListedCommand.name}: ${ListedCommand.description}`);

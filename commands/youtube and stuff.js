@@ -23,7 +23,7 @@ const ytapi = google.youtube({
 // }
 
 //control emojis
-// var client = require('../bot.js').client;
+// var client = require('../client.js');
 
 
 //used to control the dispatcher via emotes appended to the queue message
