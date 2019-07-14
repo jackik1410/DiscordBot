@@ -17,4 +17,5 @@ Features:
   Playback control with emotes
   Database for Data :P
   Petition system
+  randaom god selector for SMITE (built to be expandable for any kind of game or context)
   blablabla
