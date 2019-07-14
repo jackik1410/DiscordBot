@@ -568,7 +568,9 @@
       {
         "name": "Persephone",
         "role": "mage(temporary)",
-        "pantheon": "greek"
+        "pantheon": "greek",        
+        "type": "magical",
+        "attack": "ranged"
       },
       {
         "name": "Poseidon",
