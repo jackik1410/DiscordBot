@@ -64,6 +64,7 @@ module.exports = {
             "description":`Bot is used on **${client.guilds.array().length}** Servers
             Currently connected to **${client.voiceConnections.array().length}** Voice Channels
             Has a total of **${client.commands.array().length}** loaded
+            Invite the bot to your server [here](https://discordapp.com/api/oauth2/authorize?client_id=557633864735129601&permissions=20245584&scope=bot)
             `
           }
         }).then((m) => {
