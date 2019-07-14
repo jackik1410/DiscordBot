@@ -1,3 +1,6 @@
+Invite the bot to your server: https://discordapp.com/api/oauth2/authorize?client_id=557633864735129601&permissions=20245584&scope=bot
+
+
 Discord Bot for the V-WG server
 
 Installation:
