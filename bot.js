@@ -1,4 +1,4 @@
-const Discord = require('discord.js'); //basic discord functionality
+﻿const Discord = require('discord.js'); //basic discord functionality
 var OPs = require('./dbs/OPs.json'); //to be admin, or not to be admin
 const fs = require("fs");
 
@@ -23,11 +23,18 @@ const {db, winston} = require(`./logger.js`);
 //database: for storing and and retreiving data, winston: provides logger functionality
 
 //Defining some global functions for easier use
+
 client.isUserAdmin = function(user){
   return OPs.admins.includes(user.id);
 };
 client.isUserRealAdmin = function(user){
   return OPs.RealAdmins.includes(user.id);
+};
+client.isUserMember = function(user){
+  if (client.isUserAdmin(user)) {
+    return true;
+  }
+  return user.roles.some(r => ["Moderator", "Mitbewohner", "Admin", "el jefe"].includes(r.name));
 };
 
 
@@ -183,13 +190,13 @@ client.on('message', async msg => {
     if (msg.content.toLowerCase().match('discord')) {
       msg.react('579419800837685298');
     }
-    if (msg.content.toLowerCase().match('wtf')) {
-      // msg.react('557192347704754216');
-    }
+    // if (msg.content.toLowerCase().match('wtf')) {
+    //   // msg.react('557192347704754216');
+    // }
     if (msg.content.toLowerCase().match("bomb")) {
       msg.react('🍍');
     }
-    if (msg.content.toLowerCase().match("scheiß bot")) {
+    if (["scheiß", "shit", "dumb", "fucking", "friggin", "shitty"].some(curse => msg.content.toLowerCase().match( curse + " bot"))) {
       msg.react('🖕');
     }
     if (msg.content.toLowerCase().match("gewitter")) {
@@ -211,7 +218,7 @@ client.on('message', async msg => {
       msg.reply(`I'm sorry, i can't let you do that ${msg.author.toString()}`);
       return;
     }
-    if (ListedCommand.MemberOnly == true && !msg.member.roles.some(r => ["Moderator", "Mitbewohner", "Admin", "el jefe"].includes(r.name)) && !OPs.RealAdmins.includes(msg.author.id)) { // || msg.guild.id != '525972362617683979'
+    if (ListedCommand.MemberOnly == true && !client.isUserMember(msg.member) && !OPs.RealAdmins.includes(msg.author.id)) { // || msg.guild.id != '525972362617683979'
       msg.reply(`It seems you weren't invited to the party ${msg.author.username}, only Members are allowed that command on the V-WG server.`);
     }
     winston.info(`${OPs.RealAdmins.includes(msg.author.id)?`Admin ${msg.author.username}`:msg.author.toString()} ran command: ${msg.content.slice(client.prefix.length)}`);

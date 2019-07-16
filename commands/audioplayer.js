@@ -38,7 +38,7 @@ module.exports = {
   "CommandArray": [
     { //join
       "name":"join",
-      "description":"",
+      "description": "have the bot join the voiceChannel",
       "run": async function run(client, msg, args, command){
         let VC = await msg.member.voiceChannel;
         if (VC == undefined) {
@@ -57,7 +57,7 @@ module.exports = {
     },
     {//leave
       "name":"leave",
-      "description":"",
+      "description":"have the bot leave the voiceChannel",
       "run": async function run(client, msg, args) {
         if (msg.guild.voiceConnection) { //doesn't need checks, just doesn't do anything if not intended
         if (msg.member.voiceChannel || OPs.admins.includes(msg.author.id)) {

@@ -16,40 +16,55 @@ module.exports = {
           msg.reply("You have no access to this command, " + msg.author.username);
           return;
         }
-        msg.channel.send(`${ListedCommand.name}: ${ListedCommand.description}`);
+        msg.channel.send(`${ListedCommand.name}: ${await ListedCommand.description}`);
         return;
       }
       msg.reply("command not found, displaying help instead");
     }
 
     var helpmessage = "";
-    var generalcommands = "";
-    var membercommands = "";
+    var generalcommands = [];
+    var membercommands = [];
     var admincommands = [];
 
     await client.commands.forEach(element =>{
       if (element.adminOnly && element.adminOnly == true) {
         if (OPs.admins.includes(msg.author.id)) {//don't bother doing if not going to be shown
           // admincommands += `\n"${element.name}": ${element.description}`;
-          admincommands.push({"name":element.name || "unnamed",
-          "value":element.description || "no description",
-          // "inline":true
+          admincommands.push({
+            "name":element.name || "unnamed",
+            "value":element.description || "no description",
+            "inline":true
         });
         }
       } else if (element.MemberOnly && element.MemberOnly == true) {
-        if ( msg.channel.type != 'dm' && msg.member.roles.some(r => ["Moderator", "Mitbewohner", "Admin", "el jefe"].includes(r.name))) {//don't bother doing if not going to be shown
-          membercommands += `\n<${element.name}>: ${element.description}`;
+        if ( msg.channel.type != 'dm' && client.isUserMember(msg.member)) {//don't bother doing if not going to be shown
+          membercommands.push({
+            "name":(element.name || "unnamed" ) + "`Member`",
+            "value":element.description || "no description",
+            "inline":true
+          });
         }
       } else {
-        generalcommands += `\n'${element.name}': ${element.description}`;
+        generalcommands.push({
+          "name":element.name || "unnamed",
+          "value":element.description || "no description",
+          "inline":true
+        });
       }
     });
 
   //double checking roles
-    if ( msg.channel.type != 'dm' && msg.member.roles.find(r => r.name == "Mitbewohner")) {
-      membercommands = "\nMember Commands: ```javascript\n" + membercommands+"```";
+    if ( msg.channel.type != 'dm' && client.isUserMember(msg.member)) {
+      membercommands = "\nMember Commands: ";
     }
-    helpmessage = "Available Commands: ```javascript\n" + generalcommands + "```" + membercommands;
+
+    helpmessage = {
+      "content":"Available Commands: ",
+      "embed":{
+        "fields": generalcommands.concat(membercommands)
+      }
+  };
     msg.channel.send(helpmessage);
     if (OPs.admins.includes(msg.author.id)) {
       // admincommands =  "\nAdmincommands: ```javascript\n" + admincommands+"```";

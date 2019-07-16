@@ -23,6 +23,10 @@ module.exports = {
       "aliases": ["pet"],
       "description": "Starting server petitions, joining them and listing them 'petition list, petition create ~name~, petition sign ~name~'",
       "run": async function run(client, msg, args, command){
+        if(msg.channel.type == "dm"){
+          msg.reply(`you can only do that on a server`);
+          return;
+        }
         // var petitionname = msg.content.slice(1 + command.length + 1 + args[0].length + 1);
         var petitionname = args[1]; //allows no spaces
         var allpetitions = db.get(`petitions.${msg.guild.id}`).value();

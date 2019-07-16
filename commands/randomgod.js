@@ -76,7 +76,7 @@ module.exports = {
     {
       "name":"randomgod",
       "aliases":["rgod","random"],
-      "description":`usage: ${this.name} list, ${this.name} any, ${this}`,
+      "description": `usage: randomgod list, randomgod any, randomgod info Aprhodite, randomgod hunter/mage/melee/greek/romand`,
       // "MemberOnly": true,
       "run": async function run(client, msg, args, command){
         console.log(this);
