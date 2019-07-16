@@ -178,8 +178,8 @@ client.on('message', async msg => {
     if (msg.author.id == '289752534032056320' || msg.author.username=="Yuri" || ['yuri', 'moritz', 'kaesekuchen', 'käsekuchen'].some(triggerword => {if (msg.content.toLowerCase().match(triggerword)) return true;}) || msg.isMentioned('289752534032056320')) {
       // msg.react('579336050153881601');//old
       msg.react('579357609203728394');//new
-
     }
+    /*
     if (msg.content.toLowerCase().match('discord')) {
       msg.react('579419800837685298');
     }
@@ -196,6 +196,7 @@ client.on('message', async msg => {
       // msg.react("525993358154530817");
       msg.reply("GEWITTER?!");
     }
+    */
   }
 
 
