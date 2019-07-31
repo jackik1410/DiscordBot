@@ -135,8 +135,9 @@ client.on('ready', async () => { // tell them when you're ready
 
 client.on('error', async (error) => {
   if (error.message.match('ECONNRESET')) {
-    winston.info('Client suffered ECONNRESET, error caught, carrying on...');
-    return;
+    await winston.info('Client suffered ECONNRESET, error caught, restarting...');
+    client.restart('ECONNRESET caught, restarting to avoid issues', 0);
+    return; //it shouldn't matter at this position
   }
   winston.error(error);
 });

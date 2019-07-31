@@ -15,7 +15,22 @@ module.exports = {
       "description":"restarts the bot, first argument should be the timeout in seconds, anything after that will be logged as the reason;",
       "adminOnly": true,
       "run": async function run(client, msg, args, command){
-          restart( msg.content.slice(client.prefix.length + command.length + 1 + (args[0] && typeof args[0]=='number')?args[0].length+1:0), (typeof args[0]=='number')?args[0]:0);
+          var timeout = (!isNaN(args[0]))?args.shift():0;
+          var reason = args.join(" ");
+
+          console.log("timeout value: " + timeout );
+          console.log("note: " + reason);
+
+          client.restart(reason, timeout*1000);
+      }
+    },
+    {
+      "name":"abortrestart",
+      "aliases":["cancelrestart", "stoprestart"],
+      "description":"Stops a pending restart of the bot",
+      "adminOnly": true,
+      "run": async function run(client, msg, args, command){
+          client.abortRestart();
       }
     },
     { //oldrestart no longer used

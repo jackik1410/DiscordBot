@@ -80,6 +80,19 @@ const FileSync = require('lowdb/adapters/FileSync');
 const adapter = new FileSync('./dbs/db.json');
 const db = low(adapter);
 
+
+function abortRestart(){
+  if (client.rebooting.timer != undefined || client.rebooting) {
+    clearTimeout(client.rebooting.timer);
+    var remainingtime= client.rebooting.timeleft();
+    delete client.rebooting;
+    winston.info('scheduled restart aborted');
+    winston.info(`with ${remainingtime/1000}s left`);
+  } else {
+    winston.info('No restart scheduled, nothing happened');
+  }
+}
+
 async function restart(reason, timeout){
   // var client = require('./client.js');
   if (client.rebooting != undefined) {
@@ -87,16 +100,21 @@ async function restart(reason, timeout){
     return false;
   }
   if (timeout == undefined || typeof timeout != 'number') {
-    timeout = 0;
+    timeout = 30*1000; //30 sec
   }
 
   //Tell the world you're restarting
   clearInterval(client.events.get("ActivityUpdate").runtime);
-  client.user.setPresence({status: 'dnd', game: { name: 'to my process shutting down', type: "LISTENING" }})
-  .then(winston.log).catch(winston.error);
+  client.user.setPresence({status: 'dnd',
+    game: {
+      name: `to my process shutting down ${(timeout ==0)?'':` in ${timeout/1000} seconds`}`,
+      type: "LISTENING" }
+  })
+  .then(winston.verbose('updated bot status')).catch(winston.error);
   client.user.setStatus('afk');
 
-  winston.info(`RESTARTING BOT${(timeout ==0)?'':` in ${timeout}`}, reason:` + (reason != undefined)?reason:'no reason given');
+  winston.info(`RESTARTING BOT${(timeout ==0)?'':` in ${timeout/1000} seconds`}, reason:` + (reason != undefined)?reason:'no reason given');
+
   if (false) {//notify all voiceChannel users with a short message
     var broadcast = client.createVoiceBroadcast();
     await client.voiceConnections.forEach(async (connection) =>{
@@ -104,23 +122,24 @@ async function restart(reason, timeout){
     });
     broadcast.playFile(`Sounds/`);
   }
+
   if (timeout > 0) {
     client.rebooting = {
-      'timer':setTimeout(rebootBot(), timeout*1000),
-      'reason': reason};
+        'abort': abortRestart,
+        'timer':setTimeout(rebootBot, timeout),
+        'reason': reason,
+        'timestamp': new Date,
+        'timeout': timeout,
+        'timeleft': function(){
+            return (new Date).getTime() - (this.timestamp).getTime();
+        }
+  };
   } else {
-    rebootBot();
+    // rebootBot();
+    console.log("bot tried to restart without timeout");
+    console.log("timeout defined: " + timeout)
   }
   return true;
-}
-function abortRestart(){
-  if (client.rebooting.timer != undefined) {
-    clearTimeout(client.rebooting.timer);
-    delete client.rebooting;
-    winston.info('scheduled restart aborted');
-  } else {
-    winston.info('No restart scheduled, nothing happened');
-  }
 }
 
 function rebootBot(){
@@ -136,7 +155,7 @@ function rebootBot(){
     return;
   }
   if (subprocess.connected) {
-    console.log('disconnecting subprocess');
+    winston.info('disconnecting subprocess');
     subprocess.disconnect();
   }
   subprocess.unref();
@@ -146,6 +165,10 @@ function rebootBot(){
 module.exports = {
   "winston": winston,
   "db": db,
-  "restart": restart,
-  "abortrestart": abortRestart,
+  // "restart": restart,
+  // "abortrestart": abortRestart,
 };
+
+
+client.restart = restart;
+client.abortrestart = abortRestart;
