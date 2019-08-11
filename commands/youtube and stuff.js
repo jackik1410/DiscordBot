@@ -164,6 +164,7 @@ module.exports = {
     { //play (videos or sound only media)
       "name": "play",
       "description": "Provided with either keywords or url, plays audio stream over voiceChannel",
+      "guildOnly": true,
       "run": async function run(client, msg, args){
         if (!msg.guild.playqueue) {
           msg.guild.playqueue = [];
@@ -279,6 +280,7 @@ module.exports = {
     { //skip
       "name":"skip",
       "description":"skips the currently playing song",
+      "guildOnly": true,
       "run": async function run(client, msg, args){
         if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher) {
           if (args[0] && typeof args[0] == 'number' && args[0] >0) {
@@ -300,6 +302,7 @@ module.exports = {
     {
       "name":"loop",
       "description":"Toggles looping the queue",
+      "guildOnly": true,
       "run": async function run(client, msg, args){
         msg.guild.loop = (msg.guild.loop)?!msg.guild.loop:true;
         // showPlaylist(client, msg, [], false);

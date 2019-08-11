@@ -58,13 +58,16 @@ module.exports = {
       "aliases":['botinfo', 'info', 'generalinfo', 'botstats', 'stats'],
       "description": "displays general information about the bot",
       "run": async function run(client, msg, args){
+          var memCount = 0;
+          client.guilds.forEach(g =>{memCount +=g.memberCount;});
+
         msg.channel.send({
           "embed":{
             "title": client.user.username + " stats:",
-            "description":`Bot is used on **${client.guilds.array().length}** Servers
+            "description":`Bot is used on **${client.guilds.array().length}** Servers with **${memCount}** Members
             Currently connected to **${client.voiceConnections.array().length}** Voice Channels
             Has a total of **${client.commands.array().length}** loaded commands
-            Invite the bot to your server [here](https://discordapp.com/api/oauth2/authorize?client_id=557633864735129601&permissions=20245584&scope=bot)
+            ${(msg.channel.type=='dm')?"":`Invite the bot to your server [here](${client.generateInvite()})`}
             `
           }
         }).then((m) => {
@@ -83,7 +86,6 @@ module.exports = {
           case 'show'://fall-through, but posted public
             var showpublic = true;
           case 'list':
-            var showpublic = false;
             var list = [];
             for (var i = 0; i < todolist.length; i++) {
               list.push({
@@ -99,15 +101,16 @@ module.exports = {
                 "fields": list
               }
             };
-            if (true) {
+            if (showpublic) {
               msg.channel.send(message);
             } else {
               msg.author.send(message);
-              msg.reply(`you were sent a DM with all todolist items.`);
+              msg.reply(`you were sent a DM with all todolist items.`).then(m=> m.delete(60*1000));
             }
             break;
           case 'add':
-            await todolist.push({"author":{"id":msg.author.id, "name":msg.author.username}, "content":msg.content.slice(client.prefix.length+command.length+1)});
+            await todolist.push({"author":{"id":msg.author.id, "name":msg.author.username},
+                "content":msg.content.slice(client.prefix.length+command.length+"add".length+1)});
             // console.log(todolist);
             db.set('todolist', todolist).write();
             break;

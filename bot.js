@@ -15,9 +15,6 @@ var client = require('./client.js');
 process.title = `running V-WG Bot`;//only you can see this
 client.prefix = "!"; // just change the prefix here
 
-console.log("client");
-console.log(client);
-// module.exports = {"client": client};
 
 const {db, winston} = require(`./logger.js`);
 //database: for storing and and retreiving data, winston: provides logger functionality
@@ -39,90 +36,98 @@ client.isUserMember = function(user){
 
 
 //reading files and collecting the commands
-async function loadCommands(){
+async function loadCommands(extensiveLogging){
 
-  //preparing collections for commands (this is how they are accessible later)
-  client.commands = new Discord.Collection();
-  client.aliases = new Discord.Collection();//refering to client.commands
+    //preparing collections for commands (this is how they are accessible later)
+    client.commands = new Discord.Collection();
+    client.aliases = new Discord.Collection();//refering to client.commands
 
-  client.events = new Discord.Collection();
-  client.triggers = new Discord.Collection();
+    client.events = new Discord.Collection();
+    client.triggers = new Discord.Collection();
 
-  var commandsloaded = 0; //for show and debugging purposes
-  await fs.readdir("./commands/", (err, files) => {
-    if(err) winston.log(err);
-    let jsfile = files.filter(f => f.split(".").pop() === "js");
-    if(jsfile.length <= 0){
-      console.log("Commands Folder empy, no commands found");
-      return;
-    }
+    var commandlocations = ['./commands/', './commands private/'];
 
-    jsfile.forEach((f, i) => {
-      if(!f.endsWith(".js")) return;
-      let commandfile = require(`./commands/${f}`);
-      console.log(`${f} found`);
+    var commandsloaded = 0; //for show and debugging purposes
+    var locationsloaded = 0; //
+    await commandlocations.forEach(comloc =>{
+        fs.readdir(comloc, (err, files) => {
+            if(extensiveLogging) console.log(`-------------- Reading files from ${comloc}`);
+            if(err) winston.log(err);
+            let jsfile = files.filter(f => f.split(".").pop() === "js");
+            if(jsfile.length <= 0){
+              if(extensiveLogging) console.log("Commands Folder empy, no commands found");
+              return;
+            }
 
-      if (commandfile.CommandArray) {
-        console.log("  installing multiple:");
-        commandfile.CommandArray.forEach(element => {
-          if(!element.name) return;
-          client.commands.set(element.name, element);
-          console.log(`      - ${element.name}`);
-          if (element.aliases) {
-            let aliases = "";//aliases directly refer to the command object
-            element.aliases.forEach(alias => {
-              client.aliases.set(alias, element.name);
-              aliases += ", " + alias;
+            jsfile.forEach((f, i) => {
+              if(!f.endsWith(".js")) return;
+              let commandfile = require(comloc+f);
+              if(extensiveLogging) console.log(`${f} found`);
+
+              if (commandfile.CommandArray) {
+                if(extensiveLogging) console.log("  installing multiple:");
+                commandfile.CommandArray.forEach(element => {
+                  if(!element.name) return;
+                  client.commands.set(element.name, element);
+                  if(extensiveLogging) console.log(`      - ${element.name}`);
+                  if (element.aliases) {
+                    let aliases = "";//aliases directly refer to the command object
+                    element.aliases.forEach(alias => {
+                      client.aliases.set(alias, element.name);
+                      aliases += ", " + alias;
+                    });
+                    if(extensiveLogging) console.log(`          aliases: ${aliases.slice(2)}`);
+                  }
+                  commandsloaded += 1;
+                });
+              }
+              if (commandfile.name) {
+                client.commands.set(commandfile.name, commandfile);
+                if(extensiveLogging) console.log(`   installed - ${commandfile.name}`);
+                if (commandfile.aliases) {
+                    var aliases = "";//aliases directly refer to the commandfile
+                    commandfile.aliases.forEach(alias => {
+                        client.aliases.set(alias, commandfile.name);
+                        aliases += ", " + alias ;
+                    });
+                    if(extensiveLogging) console.log(`          aliases: ${aliases.slice(2)}`);
+                }
+                commandsloaded += 1;
+              }
+
+              if (commandfile.triggers) {
+                //still thinking about the structure here...
+              }
+
+                if (commandfile.events) { //loading Events
+                    commandfile.events.forEach(async (event) => {
+                        if (!event.run || (event.active==false)) {
+                        winston.warn(`${event.name} has no defined run function or was deactivated`);
+                        return;
+                        }
+                        if(! event.looptime || event.looptime < 500) {
+                        winston.warn(`${event.name} has looptime = ${event.looptime}, setting it to 60000ms for now;`);
+                        event.looptime = 60000;
+                        }
+                        if(extensiveLogging) console.log(`        starting ${event.name} event loop every ${event.looptime}ms`);
+                        event.runtime = setInterval(event.run, event.looptime, client); //.catch(err => winston.error(err))
+                        //commandsloaded += 1; //these are events, not commands... unsure if i should include them
+                        client.events.set(event.name, event);
+                    });
+                }
             });
-            console.log(`          aliases: ${aliases.slice(2)}`);
-          }
-          commandsloaded += 1;
+            locationsloaded=+1;
+            winston.info(`successfully loaded ${commandsloaded} commands from ${locationsloaded + "/" + commandlocations.length} locations`);
         });
-      }
-      if (commandfile.name) {
-        client.commands.set(commandfile.name, commandfile);
-        console.log(`   installed - ${commandfile.name}`);
-        if (commandfile.aliases) {
-          var aliases = "";//aliases directly refer to the commandfile
-          commandfile.aliases.forEach(alias => {
-            client.aliases.set(alias, commandfile.name);
-            aliases += ", " + alias ;
-          });
-          console.log(`          aliases: ${aliases.slice(2)}`);
-        }
-        commandsloaded += 1;
-      }
-
-      if (commandfile.triggers) {
-        //still thinking about the structure here...
-      }
-
-      if (commandfile.events) { //loading Events
-        commandfile.events.forEach(async (event) => {
-          if (!event.run || (event.active==false)) {
-            winston.warn(`${event.name} has no defined run function or was deactivated`);
-            return;
-          }
-          if(! event.looptime || event.looptime < 50) {
-            winston.warn(`${event.name} has looptime = ${event.looptime}, setting it to 60000ms for now;`);
-            event.looptime = 60000;
-          }
-          console.log(`        starting ${event.name} event loop every ${event.looptime}ms`);
-          event.runtime = setInterval(event.run, event.looptime, client); //.catch(err => winston.error(err))
-          //commandsloaded += 1; //these are events, not commands... unsure if i should include them
-          client.events.set(event.name, event);
-        });
-      }
     });
-    winston.info(`successfully loaded ${commandsloaded} commands`);
-  });
+    return commandsloaded;
 }
 function resetCommands(){
   winston.info('reloading all bot commands');
   delete client.commands, client.aliases, client.triggers, client.events;
-  loadCommands();
+  loadCommands(false);
 }
-loadCommands(); //ACTUALLY loading commands
+loadCommands(true); //ACTUALLY loading commands
 
 client.on('ready', async () => { // tell them when you're ready
   module.exports = {"client": client, "resetcommands": resetCommands};
@@ -135,15 +140,21 @@ client.on('ready', async () => { // tell them when you're ready
 
 client.on('error', async (error) => {
   if (error.message.match('ECONNRESET')) {
-    await winston.info('Client suffered ECONNRESET, error caught, restarting...');
-    client.restart('ECONNRESET caught, restarting to avoid issues', 0);
-    return; //it shouldn't matter at this position
+    winston.info('Client suffered ECONNRESET, error caught, carrying on...');
+    return;
+  }
+  if (error.message.match('ENOTFOUND')) {
+    winston.info('Client suffered ENOTFOUND, error 443, carrying on as normal...');
+    return;
   }
   winston.error(error);
 });
-client.on('debug', async (error) => {
-  // console.log(error);
-  winston.debug('client ' + error);
+
+client.on('debug', async (debugmsg) => {
+    if(debugmsg.toLowerCase().match('heartbeat') && true){
+        return;
+    }
+  winston.debug('client ' + debugmsg);
 });
 
 
@@ -172,7 +183,7 @@ client.on("guildDelete", guild => {
 
 client.on('message', async msg => {
 
-  if (msg.author.bot) return; //would react to own messages otherwise
+  if (msg.author.bot) return; //would react to own messages otherwise, potentially
 
   {//to be moved via the 'trigger' Collection
     if (msg.isMemberMentioned(client.user)) {
@@ -209,7 +220,11 @@ client.on('message', async msg => {
 
 
   //HERE START THE COMMANDS
-  if (0!= msg.content.startsWith(client.prefix)) {} else return; //only act when called
+  if (0!= msg.content.startsWith(client.prefix)) {} else {
+      if(msg.channel.type == 'dm') {
+          winston.info(`DM from ${msg.author.toString()}: ` +msg.content); //sends messages to the bot to the bot admins, they could be complaints or suggestions
+      } else return; //only act when called
+  }
 
   var args = msg.content.slice(1).trim().split(/ +/g);
   var command = args.shift().toLowerCase();
@@ -222,6 +237,10 @@ client.on('message', async msg => {
     }
     if (ListedCommand.MemberOnly == true && !client.isUserMember(msg.member) && !OPs.RealAdmins.includes(msg.author.id)) { // || msg.guild.id != '525972362617683979'
       msg.reply(`It seems you weren't invited to the party ${msg.author.username}, only Members are allowed that command on the V-WG server.`);
+    }
+    if (ListedCommand.guildOnly && msg.channel.type !='text') {
+        msg.channel.send("That command is only available on a server, I'm sorry.");
+        return;
     }
     winston.info(`${OPs.RealAdmins.includes(msg.author.id)?`Admin ${msg.author.username}`:msg.author.toString()} ran command: ${msg.content.slice(client.prefix.length)}`);
     try {

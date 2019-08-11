@@ -39,6 +39,7 @@ module.exports = {
     { //join
       "name":"join",
       "description": "have the bot join the voiceChannel",
+      "guildOnly": true,
       "run": async function run(client, msg, args, command){
         let VC = await msg.member.voiceChannel;
         if (VC == undefined) {
@@ -58,18 +59,20 @@ module.exports = {
     {//leave
       "name":"leave",
       "description":"have the bot leave the voiceChannel",
+      "guildOnly": true,
       "run": async function run(client, msg, args) {
         if (msg.guild.voiceConnection) { //doesn't need checks, just doesn't do anything if not intended
-        if (msg.member.voiceChannel || OPs.admins.includes(msg.author.id)) {
-          msg.guild.voiceConnection.disconnect();
-        }
-          // console.log('disconnecting from voiceChannel');
+            if (msg.member.voiceChannel || OPs.admins.includes(msg.author.id)) {
+              msg.guild.voiceConnection.disconnect();
+            }
+              // console.log('disconnecting from voiceChannel');
         }
       }
     },
     {//pause
       "name":"pause",
       "description":"pauses playback, undo with 'unpause'",
+      "guildOnly": true,
       "run": async function run(client, msg, args){
         if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher && !msg.guild.voiceConnection.dispatcher.paused) {
           msg.guild.voiceConnection.dispatcher.pause();
@@ -82,6 +85,7 @@ module.exports = {
       "name":"unpause",
       "aliases":['resume'],
       "description":"resumes playback",
+      "guildOnly": true,
       "run": async function run(client, msg, args){
         if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher && msg.guild.voiceConnection.dispatcher.paused) {
           msg.guild.voiceConnection.dispatcher.resume();
@@ -93,6 +97,7 @@ module.exports = {
     {//stop
       "name":"stop",
       "description":"Completely stops playback",
+      "guildOnly": true,
       "run": async function run(client, msg, args){
         if (msg.guild.voiceConnection && msg.guild.voiceConnection.dispatcher) {
           msg.guild.voiceConnection.dispatcher.end();
@@ -104,6 +109,7 @@ module.exports = {
     {//volume
       "name":"volume",
       "description":"Sets the volume",
+      "guildOnly": true,
       "run": async function run(client, msg, args){
         var upperlimit = 10;
         var lowerlimit = 0;
@@ -137,6 +143,7 @@ module.exports = {
       "name":"sound",
       "description": "still not entirely implemented",
       "adminOnly": true,
+      "guildOnly": true,
       "run": async function run(client, msg, args, command) {
         switch (args[0]) {//args[0]
           case 'test':
@@ -182,8 +189,11 @@ module.exports = {
             if (!fs.existsSync(path)) {
               path = `./Sounds/${args[0]}.mp3`;
               if (!fs.existsSync(path)) {
-                msg.reply(`couldn't find Sound`);
-                return;
+                path = `./Sounds/${args[0]}.ogg`;
+                if (!fs.existsSync(path)) {
+                    msg.reply(`couldn't find Sound`);
+                    return;
+                }
               }
             }
 
