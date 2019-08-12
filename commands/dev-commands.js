@@ -67,7 +67,7 @@ module.exports = {
             "description":`Bot is used on **${client.guilds.array().length}** Servers with **${memCount}** Members
             Currently connected to **${client.voiceConnections.array().length}** Voice Channels
             Has a total of **${client.commands.array().length}** loaded commands
-            ${(msg.channel.type=='dm')?"":`Invite the bot to your server [here](${client.generateInvite()})`}
+            ${(msg.channel.type=='dm')?"":`Invite the bot to your server [here](${await client.generateInvite().then()})`}
             `
           }
         }).then((m) => {

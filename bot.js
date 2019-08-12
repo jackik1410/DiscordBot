@@ -64,6 +64,14 @@ async function loadCommands(extensiveLogging){
               let commandfile = require(comloc+f);
               if(extensiveLogging) console.log(`${f} found`);
 
+              if(commandfile.TriggerArray){
+                if(extensiveLogging) console.log("  reading Triggers:");
+                commandfile.TriggerArray.forEach( trigger => {
+                  if(extensiveLogging) console.log(`      + ${trigger.name}`);
+                  client.triggers.set(trigger.name, trigger);
+                });
+              }
+
               if (commandfile.CommandArray) {
                 if(extensiveLogging) console.log("  installing multiple:");
                 commandfile.CommandArray.forEach(element => {
@@ -81,6 +89,7 @@ async function loadCommands(extensiveLogging){
                   commandsloaded += 1;
                 });
               }
+
               if (commandfile.name) {
                 client.commands.set(commandfile.name, commandfile);
                 if(extensiveLogging) console.log(`   installed - ${commandfile.name}`);
@@ -217,6 +226,11 @@ client.on('message', async msg => {
     }
     */
   }
+
+  client.triggers.forEach(async trigger => {
+      // console.log(trigger);
+      if(await trigger.shouldTrigger(client, msg) == true) trigger.run(client, msg);
+  });
 
 
   //HERE START THE COMMANDS
