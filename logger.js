@@ -32,7 +32,7 @@ winston.add(new winston.transports.Console({level: 'silly',
   // new winston.transports.File({ filename: 'error.log', level: 'error' });
   // new winston.transports.File({ filename: 'combined.log' });
 var client = require('./client.js');
-client.on('ready', () => {
+client.once('ready', () => {
   class CustomTransport extends Transport {
     constructor(opts) {
       super(opts);
