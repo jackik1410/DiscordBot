@@ -6,7 +6,6 @@ const client = new Discord.Client({
    token: auth.token, //can be manually edited here aswell to token: 'YouRTokenHeRe',
    autorun: true
 });
-client.login(auth.token);//needed
 
 
 module.exports = client;
