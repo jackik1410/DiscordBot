@@ -92,8 +92,8 @@ client.on("guildDelete", guild => {
 
 
 client.on('message', async msg => {
-
-  if (msg.author.bot) return; //would react to own messages otherwise, potentially
+    if(msg.author.id === client.user.id) return; //don't react to own messages
+  // if (msg.author.bot) return; //would react to own messages otherwise, potentially
 
   {//to be moved via the 'trigger' Collection
     if (msg.isMemberMentioned(client.user)) {
@@ -105,31 +105,11 @@ client.on('message', async msg => {
       });
     }
     if (msg.author.id == '289752534032056320' || msg.author.username=="Yuri" || ['yuri', 'moritz', 'kaesekuchen', 'käsekuchen'].some(triggerword => {if (msg.content.toLowerCase().match(triggerword)) return true;}) || msg.isMentioned('289752534032056320')) {
-      // msg.react('579336050153881601');//old
-      msg.react('579357609203728394');//new
+      msg.react('579357609203728394');
     }
-    /*
-    if (msg.content.toLowerCase().match('discord')) {
-      msg.react('579419800837685298');
-    }
-    // if (msg.content.toLowerCase().match('wtf')) {
-    //   // msg.react('557192347704754216');
-    // }
-    if (msg.content.toLowerCase().match("bomb")) {
-      msg.react('🍍');
-    }
-    if (["scheiß", "shit", "dumb", "fucking", "friggin", "shitty"].some(curse => msg.content.toLowerCase().match( curse + " bot"))) {
-      msg.react('🖕');
-    }
-    if (msg.content.toLowerCase().match("gewitter")) {
-      // msg.react("525993358154530817");
-      msg.reply("GEWITTER?!");
-    }
-    */
   }
 
   client.triggers.forEach(async trigger => {
-      // console.log(trigger);
       if(await trigger.shouldTrigger(client, msg) == true) trigger.run(client, msg);
   });
 
@@ -152,6 +132,7 @@ client.on('message', async msg => {
     }
     if (ListedCommand.MemberOnly == true && !client.isUserMember(msg.member) && !OPs.RealAdmins.includes(msg.author.id)) { // || msg.guild.id != '525972362617683979'
       msg.reply(`It seems you weren't invited to the party ${msg.author.username}, only Members are allowed that command on the V-WG server.`);
+      return;
     }
     if (ListedCommand.guildOnly && msg.channel.type !='text') {
         msg.channel.send("That command is only available on a server, I'm sorry.");
@@ -159,7 +140,7 @@ client.on('message', async msg => {
     }
     winston.info(`${OPs.RealAdmins.includes(msg.author.id)?`Admin ${msg.author.username}`:msg.author.toString()} ran command: ${msg.content.slice(client.prefix.length)}`);
     try {
-      ListedCommand.run(client, msg, args, command, db).catch(err => winston.error(err));
+      ListedCommand.run(client, msg, args, command, db).then().catch(err => winston.error(err));
     } catch (e) {
       winston.log(e);
     }
