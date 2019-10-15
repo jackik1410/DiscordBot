@@ -4,7 +4,7 @@ const {winston} = require(`./logger.js`);
 const fs = require("fs");
 
 //reading files and collecting the commands
-
+const Command = require('./commandUtilities.js');
 async function loadCommands(extensiveLogging){
 
     //preparing collections for commands (this is how they are accessible later)
@@ -45,7 +45,7 @@ async function loadCommands(extensiveLogging){
                 if(extensiveLogging) console.log("  installing multiple:");
                 commandfile.CommandArray.forEach(element => {
                   if(!element.name) return;
-                  client.commands.set(element.name, element);
+                  client.commands.set(element.name, new Command(element));
                   if(extensiveLogging) console.log(`      - ${element.name}`);
                   if (element.aliases) {
                     let aliases = "";//aliases directly refer to the command object
@@ -59,19 +59,20 @@ async function loadCommands(extensiveLogging){
                 });
               }
 
-              if (commandfile.name) {
-                client.commands.set(commandfile.name, commandfile);
-                if(extensiveLogging) console.log(`   installed - ${commandfile.name}`);
-                if (commandfile.aliases) {
-                    var aliases = "";//aliases directly refer to the commandfile
-                    commandfile.aliases.forEach(alias => {
-                        client.aliases.set(alias, commandfile.name);
-                        aliases += ", " + alias ;
-                    });
-                    if(extensiveLogging) console.log(`          aliases: ${aliases.slice(2)}`);
-                }
-                commandsloaded += 1;
-              }
+              // // not installing single commands anymore
+              // if (commandfile.name) {
+              //   client.commands.set(commandfile.name, commandfile);
+              //   if (extensiveLogging) console.log(`   installed - ${commandfile.name}`);
+              //   if (commandfile.aliases) {
+              //       var aliases = "";//aliases directly refer to the commandfile
+              //       commandfile.aliases.forEach(alias => {
+              //           client.aliases.set(alias, commandfile.name);
+              //           aliases += ", " + alias ;
+              //       });
+              //       if(extensiveLogging) console.log(`          aliases: ${aliases.slice(2)}`);
+              //   }
+              //   commandsloaded += 1;
+              // }
 
               if (commandfile.triggers) {
                 //still thinking about the structure here...
