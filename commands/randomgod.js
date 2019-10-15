@@ -33,9 +33,7 @@ function FullGod(godObject){
 
 
   } catch (e) {
-    winston.log(e);
-  } finally {
-
+    winston.error(e);
   }
   // return char;
 }
@@ -66,7 +64,7 @@ async function SendGodInfo(msg, game, char, full){
   }
   charInfo.embed.description = description || description(char);
 
-  console.log(charInfo);
+  // console.log(charInfo);
 
   msg.channel.send(`chosen god is: ${char.name}`, charInfo);
 }
@@ -76,12 +74,13 @@ module.exports = {
     {
       "name":"randomgod",
       "aliases":["rgod","random"],
+      "repeatable": true,
       "description": `usage: randomgod list, randomgod any, randomgod info Aprhodite, randomgod hunter/mage/melee/greek/romand`,
       // "MemberOnly": true,
       "run": async function run(client, msg, args, command){
-        console.log(this);
-        var char;
-
+        // console.log(this);
+        // console.log(arguments);
+        let char;
 
         switch (args[0]) {
           case 'sort':
@@ -201,7 +200,6 @@ module.exports = {
           case 'all':
           case 'any':
           case undefined:
-
             char = chars[ Math.floor(Math.random() * chars.length) ];
             SendGodInfo(msg, chosengame, char, true);
             return;
