@@ -65,8 +65,7 @@ rl.on('line', (line) => {
           console.log(ListedCommand);
           console.log("command couldn't be run, run() not defined");
           return;
-        }
-        if (ListedCommand.cli == false) {
+      } else if (ListedCommand.cli == false) {
           console.log('This command was intentionally deactivated for the CLI');
           return;
         }
