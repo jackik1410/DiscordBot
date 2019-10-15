@@ -7,9 +7,13 @@ var doAutoUpdate = true; //weither or not it automatically updates from git repo
 
 const {username, password, token} = require("./auth.json").git;
 
-function initialiseRepo (git) {
-  return git.init()
-    .then(() => git.addRemote('origin', 'https://github.com/jackik1410/DiscordBot')); //edit this if you want it to fetch from somewhere else.
+function initialiseRepo () {
+  try {
+    return git.init()
+      .then(() => git.addRemote('origin', 'https://github.com/jackik1410/DiscordBot')); //edit this if you want it to fetch from somewhere else.
+  } catch (e) {
+    winston.error(e);
+  }
 }
 
 // git.pull().tags((err, tags) => console.log("Latest available tag: %s", tags.latest));
@@ -44,10 +48,9 @@ async function checkForUpdates(){
 //here starts the actuak loop
 if (doAutoUpdate) {
   if(!git.checkIsRepo()){
-    initialiseRepo(git).
+    initialiseRepo().
     git.fetch();
   }
-
   setInterval(checkForUpdates, 1 * 60 * 1000);// 60000 = 1min
 }
 
