@@ -9,9 +9,24 @@ var chosengame = db.get('smite').value();
 
 
 
-function FullGod(godObject){
-  try {
+//prepare smite god infos
+let cred = require("../auth.json").hirez;
+const Hirez = require('hirez.js')
+let hirez = new Hirez({
+  devId: cred[0],
+  authKey: cred[1]
+});
 
+hirez.smite('pc').session.generate().then( res=>{
+  hirez.smite('pc').getGods().then(gods=>{
+    db.set("smite.chars", gods).write();
+  });
+});
+
+
+function FullGod(godObject){
+  return;
+  try {
     if (!godObject.attack) {
       godObject.type = new Promise((resolve, reject) => {
         if (["mage", "hunter"].includes(godObject.role)) {
@@ -31,9 +46,9 @@ function FullGod(godObject){
         }).then().catch(e => console.log(e));
     }
 
-
   } catch (e) {
-    winston.error(e);
+    // console.log(e);
+    winston.info(e);
   }
   // return char;
 }
@@ -41,46 +56,44 @@ function FullGod(godObject){
 
 async function SendGodInfo(msg, game, char, full){
     // console.log(char);
-    FullGod(char);
+    // FullGod(char);
     // console.log(char);
-  var charInfo = {
-    "embed":{
-      "title":char.name,
-      "description": ""
-    }
-  };
+  let charInfo;
+  // var charInfo = {
+  //   "embed":{
+  //     "title":char.Name,
+  //     "description": ""
+  //   }
+  // };
   var description;
   if (full && game.info.charfullinfo) {
-    description = await (Function('char', game.info.charfullinfo))(char);
+    charInfo = await (Function('char', game.info.charfullinfo))(char);
   } else if (game.info.charinfo) {
-    description = await (Function('char', game.info.charinfo))(char);
+    charInfo = await (Function('char', game.info.charinfo))(char);
   } else {
     for (var property in char) {
       if (char.hasOwnProperty(property)) {
-        if (property == "name") break;
-        description += " " + char[property];
+        if (property == "Name") return;
+        charInfo += " " + char[property];
       }
     }
   }
-  charInfo.embed.description = description || description(char);
+  // charInfo.embed.description = description || description(char);
 
   // console.log(charInfo);
 
-  msg.channel.send(`chosen god is: ${char.name}`, charInfo);
+  msg.channel.send(`chosen god is: ${char.Name}`, {embed:charInfo});
 }
 
 module.exports = {
   "CommandArray":[
     {
       "name":"randomgod",
-      "aliases":["rgod","random"],
-      "repeatable": true,
-      "description": `usage: randomgod list, randomgod any, randomgod info Aprhodite, randomgod hunter/mage/melee/greek/romand`,
+      "aliases":["rgod","random", "rg"],
+      // "repeatable": true,
+      "description": `usage: randomgod list, randomgod any, randomgod info Aprhodite, randomgod hunter/mage/melee/greek/roman`,
       // "MemberOnly": true,
       "run": async function run(client, msg, args, command){
-        // console.log(this);
-        // console.log(arguments);
-        let char;
 
         switch (args[0]) {
           case 'sort':
@@ -144,7 +157,7 @@ module.exports = {
 
             }
             return;
-            break;
+            // break;
           case 'test':
             console.log(
               await Object.keys(categories).forEach(cat => {
@@ -156,7 +169,7 @@ module.exports = {
               })
             );
             return;
-            break;
+            // console.log("break");
           case 'help':
             msg.channel.send(this.description);
             return;
@@ -165,7 +178,7 @@ module.exports = {
             var list=[];
             await chars.forEach( char => {
               list.push({
-                "name":char.name || "none",
+                "name":char.Name || "none",
                 "value": Function('char', chosengame.info.charinfo)(char),
                 "inline": true
               });
@@ -185,18 +198,19 @@ module.exports = {
             return;
             // break;
 
-            case 'info':
-              if (args[1]) {
-                char = chars.find(g => g.name.match(args[1]));
-                if (char) {
-                  SendGodInfo(msg, chosengame, char, true);
-                } else {
-                  msg.reply(`I couldn't find a char with the name: ${args[1]}`);
-                }
+          case 'info':
+            if (args[1]) {
+              char = chars.find(g => g.Name.toLowerCase().includes(args[1].toLowerCase()));
+              if (char) {
+                SendGodInfo(msg, chosengame, char, true);
               } else {
-                msg.reply(`Please specify which char to give info about`);
+                msg.reply(`I couldn't find a char with the name: ${args[1]}`);
               }
-              break;
+            } else {
+              msg.reply(`Please specify which char to give info about`);
+            }
+            return;
+            // break;
           case 'all':
           case 'any':
           case undefined:
@@ -204,15 +218,6 @@ module.exports = {
             SendGodInfo(msg, chosengame, char, true);
             return;
           default:
-
-
-          //swap to categories.forEach( =>{}) instead in the future
-
-          // console.log('1');
-
-
-
-          // console.log('2');
 
           if (args.length != 1 ) {
             // console.log('random any char');
@@ -222,7 +227,7 @@ module.exports = {
 
             var criteria = null;
             await Object.keys(categories).forEach(cat => {
-              if (categories[cat].includes(args[0])) {
+              if (categories[cat].includes(args[0].toLowerCase())) {
                     console.log(cat);
                     // console.log(categories[cat]);
                 criteria = cat;
@@ -236,17 +241,15 @@ module.exports = {
             for (var i = 0; i < 1000; i++){ // to have a chance to recover if all checks fail, only try 1.000 times
               char = chars[ Math.floor(Math.random() * chars.length) ]; //chose random char
               FullGod(char);//expands to full detail
-
-              // console.log(char.name + " - " + char[criteria] + "===" + args[0] );
-              // console.log( (char[criteria] === args[0].toLowerCase()) + " " + typeof char[criteria] + "===" + typeof args[0]);
-
-              if (char[criteria].toLowerCase() === args[0].toLowerCase()) { //check if conforms to property value
+              // console.log(char[criteria].toLowerCase() + " == " + args[0].toLowerCase());
+              // console.log(char[criteria].toLowerCase().includes(args[0].toLowerCase()));
+              if (char[criteria].toLowerCase().includes(args[0].toLowerCase())) { //check if conforms to property value
                 break; //exit if found
               }
             }
           }
 
-          SendGodInfo(msg, chosengame, char);
+          SendGodInfo(msg, chosengame, char, true);
           // msg.channel.send(`chosen char is: ${await JSON.toString(char)}`);
         }
       }
